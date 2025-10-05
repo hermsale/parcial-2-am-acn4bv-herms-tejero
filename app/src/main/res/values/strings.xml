@@ -27,4 +27,7 @@
     <string name="place_order">Realizar pedido</string>
     <string name="unit_price_format">%1$s (unitario)</string>
     <string name="cart_total_label_format">Total: %1$s</string>
+    <string name="upload_pdf">Subir PDF</string>
+    <string name="item_total_format">Total ítem: %1$s</string>
+
 </resources>
