@@ -7,6 +7,11 @@
     <color name="brand_orange">#F57C00</color>
     <color name="brand_orange_dark">#EF6C00</color>
 
+    <!-- Verdes -->
+    <color name="brand_green">#2E7D32</color>
+    <color name="brand_green_dark">#1B5E20</color>
+
+
     <!-- Fondos y texto -->
     <color name="brand_background">#FFF8E1</color>
     <color name="brand_surface">#FFF3E0</color>
