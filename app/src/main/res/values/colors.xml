@@ -1,7 +1,14 @@
 <resources>
-    <color name="primary">#2D6CDF</color>
-    <color name="background">#FFFFFF</color>
-    <color name="text">#222222</color>
-    <color name="muted">#F2F4F7</color>
-    <color name="card">#F7F9FC</color>
+    <!-- Marrones -->
+    <color name="brand_brown">#6D4C41</color>
+    <color name="brand_brown_dark">#4E342E</color>
+    <!-- Naranjas -->
+    <color name="brand_orange">#F57C00</color>
+    <color name="brand_orange_dark">#EF6C00</color>
+    <!-- Fondos y texto -->
+    <color name="brand_background">#FFF8E1</color>
+    <color name="brand_surface">#FFF3E0</color>
+    <color name="brand_text_primary">#2B2523</color>
+    <color name="brand_text_on_primary">#FFFFFF</color>
 </resources>
+
