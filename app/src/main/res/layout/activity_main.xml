@@ -5,9 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/spacing_md"
-    android:background="@color/background">
+    android:background="@color/brand_background">
 
-    <!-- Título de pantalla -->
+    <!-- 🔶 NUEVO: App Bar reutilizable con logo -->
+    <include
+        android:id="@+id/includeToolbar"
+        layout="@layout/include_app_bar"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Título de pantalla (ahora debajo de la toolbar) -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="0dp"
@@ -15,12 +23,12 @@
         android:text="@string/screen_title"
         android:textSize="@dimen/text_xl"
         android:textStyle="bold"
-        android:textColor="@color/text"
-        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="@color/brand_text_primary"
+        app:layout_constraintTop_toBottomOf="@id/includeToolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Filtros (LinearLayout horizontal con Buttons) -->
+    <!-- Filtros (LinearLayout horizontal con MaterialButton) -->
     <LinearLayout
         android:id="@+id/llFilters"
         android:layout_width="0dp"
@@ -32,21 +40,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnFilterAll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/filter_all"
             android:layout_marginEnd="@dimen/spacing_xs"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnFilterPrint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/filter_print"
             android:layout_marginEnd="@dimen/spacing_xs"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnFilterBinding"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -115,7 +123,7 @@
             android:textStyle="bold"
             android:textSize="@dimen/text_lg" />
 
-        <!-- Contenedor de ítems del carrito (Se llenará DINÁMICAMENTE en el Paso 2) -->
+        <!-- Contenedor de ítems del carrito (se llenará DINÁMICAMENTE en el Paso 2) -->
         <ScrollView
             android:id="@+id/svCart"
             android:layout_width="match_parent"
