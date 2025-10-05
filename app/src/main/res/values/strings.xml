@@ -20,4 +20,11 @@
     <string name="remove">Quitar</string>
     <string name="view_cart">Ver carrito</string>
     <string name="cart_items_format">(%1$d ítems)</string>
+
+
+    <string name="back_to_catalog">Volver al catálogo</string>
+    <string name="detect_from_pdf">Detectar desde PDF</string>
+    <string name="place_order">Realizar pedido</string>
+    <string name="unit_price_format">%1$s (unitario)</string>
+    <string name="cart_total_label_format">Total: %1$s</string>
 </resources>
