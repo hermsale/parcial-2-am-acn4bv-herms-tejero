@@ -4,12 +4,12 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="@dimen/spacing_sm"
-    android:layout_marginBottom="@dimen/spacing_xs"
+    android:layout_marginBottom="@dimen/spacing_sm"
     android:background="@drawable/bg_item"
     android:gravity="center_vertical"
     android:baselineAligned="false">
 
-    <!-- Miniatura del producto -->
+    <!-- Miniatura -->
     <ImageView
         android:id="@+id/ivThumb"
         android:layout_width="64dp"
@@ -17,7 +17,7 @@
         android:src="@drawable/sample_print_bw"
         android:contentDescription="@string/img_desc" />
 
-    <!-- Texto (nombre y precio) -->
+    <!-- Info -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -36,15 +36,25 @@
             android:ellipsize="end" />
 
         <TextView
+            android:id="@+id/tvDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cara simple - A4"
+            android:textColor="@color/brand_text_primary"
+            android:maxLines="2"
+            android:ellipsize="end" />
+
+        <TextView
             android:id="@+id/tvPrice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="$100"
+            android:text="$ 100"
+            android:textStyle="bold"
             android:textColor="@color/brand_text_primary"
             android:singleLine="true" />
     </LinearLayout>
 
-    <!-- Acción (con ancho mínimo para que no aplaste el texto) -->
+    <!-- Acción -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnAdd"
         android:layout_width="wrap_content"
