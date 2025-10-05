@@ -7,7 +7,7 @@
     android:padding="@dimen/spacing_md"
     android:background="@color/brand_background">
 
-    <!-- 🔶 App Bar reutilizable con logo -->
+    <!-- App Bar -->
     <include
         android:id="@+id/includeToolbar"
         layout="@layout/include_app_bar"
@@ -15,7 +15,78 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 🔹 Título de pantalla (debajo de la toolbar) -->
+    <!-- 🔶 Carrito arriba (full width) -->
+    <LinearLayout
+        android:id="@+id/panelCart"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_sm"
+        android:background="@drawable/bg_card"
+        app:layout_constraintTop_toBottomOf="@id/includeToolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:baselineAligned="false">
+
+            <TextView
+                android:id="@+id/tvCartTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/cart_title"
+                android:textStyle="bold"
+                android:textSize="@dimen/text_lg"
+                android:textColor="@color/brand_text_primary" />
+
+            <!-- Badge de cantidad -->
+            <TextView
+                android:id="@+id/tvCartCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(0 ítems)"
+                android:textColor="@color/brand_text_primary"
+                android:layout_marginEnd="@dimen/spacing_sm"/>
+        </LinearLayout>
+
+        <!-- Total + Ver carrito + Vaciar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="@dimen/spacing_sm">
+
+            <TextView
+                android:id="@+id/tvTotal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/cart_total_placeholder"
+                android:textStyle="bold"
+                android:textColor="@color/brand_text_primary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnViewCart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/view_cart"
+                android:layout_marginEnd="@dimen/spacing_sm"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnClearCart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cart_clear"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Título de pantalla -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="0dp"
@@ -24,11 +95,12 @@
         android:textSize="@dimen/text_xl"
         android:textStyle="bold"
         android:textColor="@color/brand_text_primary"
-        app:layout_constraintTop_toBottomOf="@id/includeToolbar"
+        app:layout_constraintTop_toBottomOf="@id/panelCart"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/spacing_sm"/>
 
-    <!-- 🔹 Filtros (LinearLayout horizontal con MaterialButtons) -->
+    <!-- Filtros -->
     <LinearLayout
         android:id="@+id/llFilters"
         android:layout_width="0dp"
@@ -61,15 +133,7 @@
             android:text="@string/filter_binding"/>
     </LinearLayout>
 
-    <!-- 🔹 Guideline para dividir catálogo (izq) y carrito (der) -->
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/gdSplit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.55" />
-
-    <!-- 🔹 Contenedor de Catálogo -->
+    <!-- Título catálogo -->
     <TextView
         android:id="@+id/tvCatalogTitle"
         android:layout_width="0dp"
@@ -80,9 +144,10 @@
         android:textColor="@color/brand_text_primary"
         app:layout_constraintTop_toBottomOf="@id/llFilters"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/gdSplit"
+        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="@dimen/spacing_sm"/>
 
+    <!-- Catálogo con scroll a ancho completo -->
     <ScrollView
         android:id="@+id/svCatalog"
         android:layout_width="0dp"
@@ -90,73 +155,14 @@
         app:layout_constraintTop_toBottomOf="@id/tvCatalogTitle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/gdSplit"
-        android:layout_marginEnd="@dimen/spacing_sm">
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Este LinearLayout recibirá items de catálogo (dinámicos desde MainActivity) -->
         <LinearLayout
             android:id="@+id/llCatalogContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:dividerPadding="@dimen/spacing_xs"
             android:paddingBottom="@dimen/spacing_lg"/>
     </ScrollView>
-
-    <!-- 🔹 Panel Carrito -->
-    <LinearLayout
-        android:id="@+id/panelCart"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:padding="@dimen/spacing_sm"
-        android:background="@drawable/bg_card"
-        app:layout_constraintTop_toBottomOf="@id/llFilters"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/gdSplit"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <TextView
-            android:id="@+id/tvCartTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/cart_title"
-            android:textStyle="bold"
-            android:textSize="@dimen/text_lg"
-            android:textColor="@color/brand_text_primary" />
-
-        <!-- Contenedor de ítems del carrito (se llena dinámicamente) -->
-        <ScrollView
-            android:id="@+id/svCart"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:fillViewport="true"
-            android:layout_marginTop="@dimen/spacing_sm">
-
-            <LinearLayout
-                android:id="@+id/llCartContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"/>
-        </ScrollView>
-
-        <!-- Total -->
-        <TextView
-            android:id="@+id/tvTotal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/cart_total_placeholder"
-            android:textStyle="bold"
-            android:textColor="@color/brand_text_primary"
-            android:layout_marginTop="@dimen/spacing_sm"/>
-
-        <!-- ✅ Botón Material corregido -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnClearCart"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/cart_clear"/>
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
