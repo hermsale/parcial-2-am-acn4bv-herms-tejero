@@ -29,5 +29,12 @@
     <string name="cart_total_label_format">Total: %1$s</string>
     <string name="upload_pdf">Subir PDF</string>
     <string name="item_total_format">Total ítem: %1$s</string>
+    <string name="place_all_orders">Realizar todos</string>
+    <string name="confirm_all_orders_title">Confirmar pedido</string>
+    <string name="confirm_all_orders_msg">Vas a procesar %1$d ítems por un total de %2$s.\n¿Continuar?</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancelar</string>
+    <string name="all_orders_done">Redireccionado a vista Pagos… (simulado)</string>
+
 
 </resources>
