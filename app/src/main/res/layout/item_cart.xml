@@ -1,30 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+ =============================================================
+ Archivo: item_cart.xml
+ Ubicación: app/src/main/res/layout/
+
+ ¿De qué se encarga este archivo?
+   - Define la vista individual de un ítem dentro del carrito de compras
+     en la aplicación “La Montaña”.
+   - Representa cada producto agregado al carrito con su nombre,
+     cantidad, precio total y un botón para eliminarlo.
+
+ Relación con las clases:
+   - Inflado dinámicamente por CartActivity.java dentro del contenedor
+     llCartListContainer (activity_cart.xml).
+   - Los datos son poblados a partir del modelo CartItem.java.
+   - El botón "Eliminar" (btnRemove) se vincula a un listener en CartActivity
+     para remover el producto de CartStore.
+
+ Estructura general:
+   1. Nombre del producto (tvCartName)
+   2. Cantidad y precio total (tvCartQtyPrice)
+   3. Botón “Eliminar” (btnRemove)
+
+ Diseño:
+   - Layout lineal horizontal para disposición simple de elementos.
+   - Uso de @dimen para márgenes y paddings coherentes.
+   - Colores de texto adaptados al tema de marca (@color/brand_text_primary).
+   - Margen inferior pequeño entre ítems para mejor separación visual.
+
+ =============================================================
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="@dimen/spacing_sm"
     android:layout_marginBottom="@dimen/spacing_xs">
 
+    <!--
+        Nombre del producto o servicio agregado al carrito.
+        Ocupa el espacio disponible (peso = 1) para ajustarse
+        según el texto y el tamaño de los otros elementos.
+    -->
     <TextView
         android:id="@+id/tvCartName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="Impresión B/N"
-        android:textColor="@color/brand_text_primary"/>
+        android:textColor="@color/brand_text_primary" />
 
+    <!--
+        Muestra la cantidad del ítem y su precio total formateado.
+        Ejemplo: “x2 - $200”
+    -->
     <TextView
         android:id="@+id/tvCartQtyPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="x1 - $100"
         android:layout_marginEnd="@dimen/spacing_sm"
-        android:textColor="@color/brand_text_primary"/>
+        android:textColor="@color/brand_text_primary" />
 
+    <!--
+        Botón para eliminar el ítem del carrito.
+        Acciona CartStore.remove() desde CartActivity.
+    -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnRemove"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/remove"/>
+        android:text="@string/remove" />
 </LinearLayout>
