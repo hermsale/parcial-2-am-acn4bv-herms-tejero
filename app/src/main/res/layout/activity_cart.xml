@@ -1,12 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+ =============================================================
+ Archivo: activity_cart.xml
+ Ubicación: app/src/main/res/layout/
+
+ ¿De qué se encarga este archivo?
+   - Define la interfaz de la pantalla **Carrito de Compras** de la app “La Montaña”.
+   - Muestra los ítems agregados al carrito, el total general, y permite realizar todos
+     los pedidos o volver al catálogo.
+   - Utiliza componentes Material Design (MaterialButton) y vistas reutilizables
+     como la AppBar y el Footer.
+
+ Relación con las clases:
+   - Controlada por la clase CartActivity.java, que gestiona:
+       ▪ Renderizado de ítems del carrito.
+       ▪ Cálculo del total.
+       ▪ Acciones de los botones (“Volver al catálogo” y “Realizar pedidos”).
+
+ Estructura general:
+   1. Toolbar superior (include_app_bar.xml) → título y logo de la app.
+   2. Encabezado de acciones:
+        • Botón “Volver al catálogo”.
+        • Texto con total general.
+        • Botón “Realizar todos los pedidos”.
+   3. Lista scrolleable de ítems del carrito.
+   4. Footer inferior reutilizable (include_footer.xml).
+
+ Diseño:
+   - Usa ConstraintLayout para disposición flexible y responsiva.
+   - NestedScrollView permite recorrer una lista larga de productos.
+   - Colores, márgenes y radios definidos mediante recursos (res/values/).
+
+ =============================================================
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/brand_background"
     android:padding="@dimen/spacing_md">
 
-    <!-- App Bar reutilizable -->
+    <!--
+        Sección superior reutilizable con logo y título de la app.
+        Incluye acciones comunes como el menú de opciones.
+    -->
     <include
         android:id="@+id/includeToolbar"
         layout="@layout/include_app_bar"
@@ -14,17 +52,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Volver al catálogo -->
+    <!--
+        Botón que permite volver a la pantalla principal (catálogo).
+        Llama a CartActivity → finish() o un Intent hacia MainActivity.
+    -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnBackToCatalog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/back_to_catalog"
+        android:layout_marginTop="@dimen/spacing_sm"
         app:layout_constraintTop_toBottomOf="@id/includeToolbar"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="@dimen/spacing_sm" />
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Total general -->
+    <!--
+        Muestra el total acumulado del carrito.
+        Se actualiza dinámicamente desde CartActivity.updateTotal().
+    -->
     <TextView
         android:id="@+id/tvCartGrandTotal"
         android:layout_width="wrap_content"
@@ -32,11 +76,14 @@
         android:text="Total: $ 0"
         android:textStyle="bold"
         android:textColor="@color/brand_text_primary"
+        android:layout_marginTop="@dimen/spacing_sm"
         app:layout_constraintTop_toBottomOf="@id/includeToolbar"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="@dimen/spacing_sm" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Calcula el límite inferior del encabezado (izq: volver / der: realizar todos) -->
+    <!--
+        Crea una barrera virtual para alinear el contenido inferior del encabezado,
+        de modo que los botones y textos queden correctamente espaciados.
+    -->
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrierHeader"
         android:layout_width="wrap_content"
@@ -44,19 +91,24 @@
         app:barrierDirection="bottom"
         app:constraint_referenced_ids="btnBackToCatalog,btnPlaceAllOrders" />
 
-
-    <!-- Realizar TODOS los pedidos -->
+    <!--
+        Botón que permite realizar todos los pedidos del carrito.
+        En esta versión de prueba, solo simula la acción.
+    -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnPlaceAllOrders"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/place_all_orders"
         android:backgroundTint="@color/brand_green"
+        android:layout_marginTop="@dimen/spacing_xs"
         app:layout_constraintTop_toBottomOf="@id/tvCartGrandTotal"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="@dimen/spacing_xs"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Footer común  -->
+    <!--
+        Contenedor inferior reutilizable que incluye datos de contacto,
+        branding y posibles enlaces institucionales.
+    -->
     <include
         android:id="@+id/includeFooter"
         layout="@layout/include_footer"
@@ -68,21 +120,23 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintVertical_bias="1.0" />
 
-
-    <!-- Lista scrolleable de ítems -->
+    <!--
+        Contenedor scrolleable para la lista de productos en el carrito.
+        Incluye un LinearLayout vertical donde CartActivity infla dinámicamente
+        cada ítem (item_cart.xml).
+    -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/svCartList"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:fillViewport="true"
+        android:layout_marginTop="@dimen/spacing_sm"
         app:layout_constraintTop_toBottomOf="@id/barrierHeader"
         app:layout_constraintBottom_toTopOf="@id/includeFooter"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:fillViewport="true"
-        android:layout_marginTop="@dimen/spacing_sm">
+        app:layout_constraintEnd_toEndOf="parent">
 
-
-    <LinearLayout
+        <LinearLayout
             android:id="@+id/llCartListContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
