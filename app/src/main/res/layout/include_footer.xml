@@ -1,4 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+ =============================================================
+ Archivo: include_footer.xml
+ Ubicación: app/src/main/res/layout/
+
+ ¿De qué se encarga este archivo?
+   - Define el **footer reutilizable** presente en las pantallas principales
+     de la app “La Montaña” (Catálogo y Carrito).
+   - Muestra información de contacto, redes sociales y derechos reservados,
+     reforzando la identidad visual y accesibilidad de la marca.
+
+ Relación con las clases:
+   - Incluido en activity_catalog.xml y activity_cart.xml mediante <include>.
+   - No tiene lógica propia; se muestra de forma estática en cada pantalla.
+
+ Estructura general:
+   1. Logo de la empresa (izquierda).
+   2. Datos de contacto: teléfono, email y horario (centro).
+   3. Íconos de redes sociales (derecha).
+   4. Texto inferior con derechos reservados.
+
+ Diseño:
+   - Fondo color marrón de marca (@color/brand_brown).
+   - Tipografía clara sobre fondo oscuro (@color/brand_text_on_primary).
+   - Distribución mediante ConstraintLayout con LinearLayouts secundarios
+     para mantener alineación y orden visual.
+
+ =============================================================
+-->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -11,7 +40,10 @@
     android:paddingTop="@dimen/spacing_sm"
     android:paddingBottom="@dimen/spacing_sm">
 
-    <!-- Logo -->
+    <!--
+        Logo institucional (izquierda del footer).
+        Reforza identidad visual y coherencia con la AppBar.
+    -->
     <ImageView
         android:id="@+id/ivFooterLogo"
         android:layout_width="32dp"
@@ -22,17 +54,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Datos (tel, email, horario) -->
+    <!--
+        Bloque de información de contacto (centro del footer).
+        Contiene teléfono, email y horario de atención.
+    -->
     <LinearLayout
         android:id="@+id/llFooterInfo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:layout_marginStart="@dimen/spacing_sm"
         app:layout_constraintStart_toEndOf="@id/ivFooterLogo"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/tvFooterRights"
-        app:layout_constraintEnd_toStartOf="@id/llFooterSocial"
-        android:layout_marginStart="@dimen/spacing_sm">
+        app:layout_constraintEnd_toStartOf="@id/llFooterSocial">
 
         <TextView
             android:id="@+id/tvFooterPhone"
@@ -56,16 +91,20 @@
             android:textColor="@color/brand_text_on_primary" />
     </LinearLayout>
 
-    <!-- Redes a la derecha (local drawables) -->
+    <!--
+        Bloque de redes sociales (derecha del footer).
+        Muestra íconos locales de YouTube, Instagram y TikTok.
+        Se pueden enlazar con Intents o WebViews en versiones futuras.
+    -->
     <LinearLayout
         android:id="@+id/llFooterSocial"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:gravity="end"
-        android:layout_marginStart="@dimen/spacing_sm">
+        android:layout_marginStart="@dimen/spacing_sm"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/ivYouTube"
@@ -95,7 +134,10 @@
             android:scaleType="centerInside" />
     </LinearLayout>
 
-    <!-- Derechos -->
+    <!--
+        Texto inferior de derechos reservados.
+        Ocupa todo el ancho inferior del footer.
+    -->
     <TextView
         android:id="@+id/tvFooterRights"
         android:layout_width="0dp"
@@ -103,9 +145,9 @@
         android:text="@string/footer_rights"
         android:textColor="@color/brand_text_on_primary"
         android:textSize="12sp"
+        android:layout_marginTop="@dimen/spacing_sm"
         app:layout_constraintStart_toStartOf="@id/ivFooterLogo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/llFooterInfo"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="@dimen/spacing_sm"/>
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
