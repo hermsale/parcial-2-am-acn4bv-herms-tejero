@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/footerRoot"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/brand_brown"
+    android:paddingStart="@dimen/spacing_md"
+    android:paddingEnd="@dimen/spacing_md"
+    android:paddingTop="@dimen/spacing_sm"
+    android:paddingBottom="@dimen/spacing_sm">
+
+    <!-- Logo -->
+    <ImageView
+        android:id="@+id/ivFooterLogo"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/logo_lamontana"
+        android:contentDescription="@string/app_name"
+        android:scaleType="centerInside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Datos (tel, email, horario) -->
+    <LinearLayout
+        android:id="@+id/llFooterInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toEndOf="@id/ivFooterLogo"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tvFooterRights"
+        app:layout_constraintEnd_toStartOf="@id/llFooterSocial"
+        android:layout_marginStart="@dimen/spacing_sm">
+
+        <TextView
+            android:id="@+id/tvFooterPhone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/footer_phone"
+            android:textColor="@color/brand_text_on_primary" />
+
+        <TextView
+            android:id="@+id/tvFooterEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/footer_email"
+            android:textColor="@color/brand_text_on_primary" />
+
+        <TextView
+            android:id="@+id/tvFooterHours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/footer_hours"
+            android:textColor="@color/brand_text_on_primary" />
+    </LinearLayout>
+
+    <!-- Redes a la derecha (local drawables) -->
+    <LinearLayout
+        android:id="@+id/llFooterSocial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:gravity="end"
+        android:layout_marginStart="@dimen/spacing_sm">
+
+        <ImageView
+            android:id="@+id/ivYouTube"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/youtube_icon"
+            android:contentDescription="@string/footer_youtube"
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:scaleType="centerInside" />
+
+        <ImageView
+            android:id="@+id/ivInstagram"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/instagram_icon"
+            android:contentDescription="@string/footer_instagram"
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:scaleType="centerInside" />
+
+        <ImageView
+            android:id="@+id/ivTikTok"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/tiktok_icon"
+            android:contentDescription="@string/footer_tiktok"
+            android:layout_marginStart="@dimen/spacing_sm"
+            android:scaleType="centerInside" />
+    </LinearLayout>
+
+    <!-- Derechos -->
+    <TextView
+        android:id="@+id/tvFooterRights"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/footer_rights"
+        android:textColor="@color/brand_text_on_primary"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/ivFooterLogo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/llFooterInfo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="@dimen/spacing_sm"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

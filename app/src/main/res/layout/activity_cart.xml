@@ -56,13 +56,26 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="@dimen/spacing_xs"/>
 
+    <!-- Footer común  -->
+    <include
+        android:id="@+id/includeFooter"
+        layout="@layout/include_footer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+
     <!-- Lista scrolleable de ítems -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/svCartList"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/barrierHeader"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/includeFooter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:fillViewport="true"
