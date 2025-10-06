@@ -1,8 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+ =============================================================
+ Archivo: ic_menu.xml
+ Ubicación: app/src/main/res/drawable/
+
+ ¿De qué se encarga este archivo?
+   - Define el ícono vectorial del menú (hamburguesa) utilizado en la
+     barra superior (Toolbar o AppBar) de la app “La Montaña”.
+   - Representa las tres líneas horizontales típicas que despliegan un
+     menú lateral o contextual.
+
+ Contenido y función:
+   - Es un vector simple (<vector>) de 24x24 dp, diseñado para adaptarse
+     a las densidades estándar de íconos de Android.
+   - El <path> contiene tres líneas horizontales equidistantes dibujadas
+     con color blanco puro (#FFFFFFFF), ideales para fondos oscuros.
+
+ Relación con las vistas:
+   - Generalmente se usa como icono del botón de navegación en Toolbars
+     o como acción en menús superiores.
+   - Puede asociarse a un `PopupMenu`, `NavigationDrawer` o `MenuInflater`
+     dependiendo del diseño de la pantalla.
+
+ =============================================================
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp" android:height="24dp" android:viewportWidth="24"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
     android:viewportHeight="24">
+
+    <!--
+        Path único que dibuja las tres líneas horizontales del ícono.
+        Cada "M3,6h18v2H3z" indica:
+          - M3,6 → mover a coordenada (x=3, y=6)
+          - h18  → trazo horizontal de 18 unidades
+          - v2   → trazo vertical de 2 unidades
+          - H3z  → cierre del rectángulo en la posición inicial
+    -->
     <path
         android:fillColor="#FFFFFFFF"
-        android:pathData="M3,6h18v2H3zM3,11h18v2H3zM3,16h18v2H3z"/>
+        android:pathData="M3,6h18v2H3zM3,11h18v2H3zM3,16h18v2H3z" />
 </vector>
