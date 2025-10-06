@@ -1,18 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ =============================================================
+ Archivo: strings.xml
+ Ubicación: app/src/main/res/values/
+
+ ¿De qué se encarga este archivo?
+   - Centraliza todos los textos visibles de la interfaz de usuario de la app “La Montaña”.
+   - Permite mantener la consistencia lingüística y facilitar la traducción o
+     internacionalización futura (i18n).
+
+ Relación con las vistas y clases:
+   - Referenciado por layouts (ej. activity_catalog.xml, activity_cart.xml)
+     y clases Java (ej. MainActivity, CartActivity) mediante R.string.<nombre>.
+   - Mejora la mantenibilidad: evita textos hardcodeados en código o layouts.
+
+ Estructura general:
+   1. Identificadores globales (app_name, screen_title)
+   2. Textos de filtros del catálogo
+   3. Etiquetas y textos del catálogo
+   4. Textos del carrito de compras
+   5. Acciones y botones comunes
+   6. Mensajes de confirmación / diálogo
+   7. Menús de navegación
+   8. Footer (contacto, redes sociales y derechos)
+
+ Buenas prácticas:
+   - Siempre usar placeholders (%1$s, %1$d, etc.) para texto dinámico.
+   - Mantener una convención clara y legible en los nombres:
+     prefijo + contexto + descripción (ej. cart_total_format).
+
+ =============================================================
+-->
 <resources>
+
+    <!-- ========================================================= -->
+    <!-- Identificadores globales -->
+    <!-- ========================================================= -->
     <string name="app_name">Parcial 1</string>
     <string name="screen_title">Catálogo</string>
 
-    <!-- Filtros -->
+    <!-- ========================================================= -->
+    <!-- Filtros de catálogo -->
+    <!-- ========================================================= -->
     <string name="filter_all">Todos</string>
     <string name="filter_print">Impresiones</string>
     <string name="filter_binding">Encuadernado</string>
 
+    <!-- ========================================================= -->
     <!-- Catálogo -->
+    <!-- ========================================================= -->
     <string name="catalog_title">Servicios</string>
     <string name="add">Agregar</string>
     <string name="img_desc">Imagen ilustrativa</string>
 
+    <!-- ========================================================= -->
     <!-- Carrito -->
+    <!-- ========================================================= -->
     <string name="cart_title">Carrito</string>
     <string name="cart_total_placeholder">Total: $0</string>
     <string name="cart_total_format">Total: $%1$d</string>
@@ -21,24 +64,46 @@
     <string name="view_cart">Ver carrito</string>
     <string name="cart_items_format">(%1$d ítems)</string>
 
-
+    <!-- ========================================================= -->
+    <!-- Acciones generales -->
+    <!-- ========================================================= -->
     <string name="back_to_catalog">Volver al catálogo</string>
     <string name="detect_from_pdf">Detectar desde PDF</string>
     <string name="place_order">Realizar pedido</string>
+    <string name="upload_pdf">Subir PDF</string>
+    <string name="place_all_orders">Realizar todos</string>
+
+    <!-- ========================================================= -->
+    <!-- Formatos dinámicos -->
+    <!-- ========================================================= -->
     <string name="unit_price_format">%1$s (unitario)</string>
     <string name="cart_total_label_format">Total: %1$s</string>
-    <string name="upload_pdf">Subir PDF</string>
     <string name="item_total_format">Total ítem: %1$s</string>
-    <string name="place_all_orders">Realizar todos</string>
+    <string name="cart_items_format">(%1$d ítems)</string>
+
+    <!-- ========================================================= -->
+    <!-- Diálogos de confirmación -->
+    <!-- ========================================================= -->
     <string name="confirm_all_orders_title">Confirmar pedido</string>
-    <string name="confirm_all_orders_msg">Vas a procesar %1$d ítems por un total de %2$s.\n¿Continuar?</string>
+    <string name="confirm_all_orders_msg">
+        Vas a procesar %1$d ítems por un total de %2$s.\n¿Continuar?
+    </string>
     <string name="ok">OK</string>
     <string name="cancel">Cancelar</string>
-    <string name="all_orders_done">Redireccionado a vista Pagos… (simulado)</string>
+    <string name="all_orders_done">
+        Redireccionado a vista Pagos… (simulado)
+    </string>
+
+    <!-- ========================================================= -->
+    <!-- Menú superior (AppBar) -->
+    <!-- ========================================================= -->
     <string name="menu_open_menu">Menú</string>
     <string name="menu_catalog">Catálogo</string>
     <string name="menu_cart">Carrito</string>
 
+    <!-- ========================================================= -->
+    <!-- Footer (contacto y redes sociales) -->
+    <!-- ========================================================= -->
     <string name="footer_phone">Tel: +54 11 1234-5678</string>
     <string name="footer_email">Email: lamontana@gmail.com</string>
     <string name="footer_hours">Horario: Lun–Vie 09–18, Sáb 10–14</string>
@@ -46,9 +111,5 @@
     <string name="footer_instagram">Instagram</string>
     <string name="footer_tiktok">TikTok</string>
     <string name="footer_rights">© 2025 La Montaña — Todos los derechos reservados.</string>
-
-
-
-
 
 </resources>
