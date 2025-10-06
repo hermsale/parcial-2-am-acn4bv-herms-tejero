@@ -1,5 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+ =============================================================
+ Archivo: item_cart_detail.xml
+ Ubicación: app/src/main/res/layout/
+
+ ¿De qué se encarga este archivo?
+   - Define el layout de detalle visual de un producto dentro del carrito
+     en la aplicación “La Montaña”.
+   - Permite ver y modificar la cantidad del ítem, mostrar precios unitarios
+     y totales, y realizar acciones como subir un PDF o confirmar el pedido.
+
+ Relación con las clases:
+   - Inflado dinámicamente por CartActivity.java en el contenedor llCartListContainer.
+   - Los controles de cantidad (btnPlus / btnMinus) actualizan el modelo CartItem.
+   - Los botones “Subir PDF” y “Realizar pedido” se gestionan también desde CartActivity.
+   - Se apoya en el modelo Product.java y CartItem.java para mostrar datos.
+
+ Estructura general:
+   1. Fila superior → Imagen del producto + nombre, descripción y precios.
+   2. Controles de cantidad → botones “+” y “–” para modificar unidades.
+   3. Fila inferior → botones de acción (“Subir PDF” y “Realizar pedido”).
+
+ Diseño:
+   - Fondo con drawable @drawable/bg_item (color suave).
+   - Uso de LinearLayouts anidados para mantener disposición ordenada.
+   - Espaciado coherente con @dimen y colores de marca.
+   - Botones compactos con estilo MaterialOutlined para control de cantidad.
+   - Responsive: los textos se truncan con ellipsize para evitar desbordes.
+
+ =============================================================
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -8,13 +40,16 @@
     android:layout_marginBottom="@dimen/spacing_sm"
     android:background="@drawable/bg_item">
 
-    <!-- FILA SUPERIOR: imagen + textos + qty -->
+    <!-- ========================================================= -->
+    <!-- FILA SUPERIOR: Imagen, textos descriptivos y controles de cantidad -->
+    <!-- ========================================================= -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
+        <!-- Miniatura del producto -->
         <ImageView
             android:id="@+id/ivThumb"
             android:layout_width="56dp"
@@ -22,7 +57,10 @@
             android:src="@drawable/sample_print_bw"
             android:contentDescription="@string/img_desc" />
 
-        <!-- Título + desc + precios -->
+        <!--
+            Bloque central: Nombre, descripción y precios (unitario y total).
+            Ocupa el espacio restante gracias a layout_weight=1.
+        -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -30,6 +68,7 @@
             android:orientation="vertical"
             android:paddingStart="@dimen/spacing_sm">
 
+            <!-- Nombre del producto -->
             <TextView
                 android:id="@+id/tvName"
                 android:layout_width="match_parent"
@@ -40,6 +79,7 @@
                 android:singleLine="true"
                 android:ellipsize="end" />
 
+            <!-- Descripción breve -->
             <TextView
                 android:id="@+id/tvDesc"
                 android:layout_width="match_parent"
@@ -49,6 +89,7 @@
                 android:maxLines="2"
                 android:ellipsize="end" />
 
+            <!-- Precio unitario -->
             <TextView
                 android:id="@+id/tvUnitPrice"
                 android:layout_width="match_parent"
@@ -56,7 +97,7 @@
                 android:text="$ 0 (unitario)"
                 android:textColor="@color/brand_text_primary" />
 
-            <!-- TOTAL por ítem -->
+            <!-- Total calculado del ítem -->
             <TextView
                 android:id="@+id/tvItemTotal"
                 android:layout_width="match_parent"
@@ -66,7 +107,10 @@
                 android:textColor="@color/brand_text_primary" />
         </LinearLayout>
 
-        <!-- Controles cantidad (más compactos) -->
+        <!--
+            Controles de cantidad: botones “–” y “+” con valor central.
+            Compactos y con esquinas redondeadas (cornerRadius=8dp).
+        -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -74,6 +118,7 @@
             android:gravity="center_vertical"
             android:paddingStart="@dimen/spacing_xs">
 
+            <!-- Botón menos (-) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnMinus"
                 style="?attr/materialButtonOutlinedStyle"
@@ -88,6 +133,7 @@
                 android:minWidth="0dp"
                 android:minHeight="0dp" />
 
+            <!-- Cantidad actual -->
             <TextView
                 android:id="@+id/tvQty"
                 android:layout_width="40dp"
@@ -97,6 +143,7 @@
                 android:textSize="16sp"
                 android:layout_marginHorizontal="@dimen/spacing_xs" />
 
+            <!-- Botón más (+) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnPlus"
                 style="?attr/materialButtonOutlinedStyle"
@@ -113,7 +160,9 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- FILA INFERIOR: acciones  -->
+    <!-- ========================================================= -->
+    <!-- FILA INFERIOR: Botones de acción (“Subir PDF” / “Realizar pedido”) -->
+    <!-- ========================================================= -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -121,20 +170,27 @@
         android:gravity="end"
         android:layout_marginTop="@dimen/spacing_sm">
 
+        <!--
+            Botón opcional visible solo para productos “copyBased”
+            (detectan número de copias desde un archivo PDF).
+        -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDetectFromPdf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/upload_pdf"
             android:visibility="gone"
-            android:layout_marginEnd="@dimen/spacing_sm"/>
+            android:layout_marginEnd="@dimen/spacing_sm" />
 
+        <!--
+            Botón para confirmar el pedido del ítem actual.
+            Color verde de marca para acción principal.
+        -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnPlaceOrder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/place_order"
-            android:backgroundTint="@color/brand_green"/>
+            android:backgroundTint="@color/brand_green" />
     </LinearLayout>
-
 </LinearLayout>
