@@ -10,10 +10,28 @@
     app:title=""
     app:titleCentered="false"
     app:menu="@menu/menu_top"
-    app:navigationIcon="@drawable/logo_lamontana"
-    app:navigationContentDescription="@string/app_name"
-    app:contentInsetStartWithNavigation="0dp">
+    app:contentInsetStart="16dp"
+    app:contentInsetEnd="16dp">
 
+    <!-- Logo chico, fijo a la izquierda -->
+    <ImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="start|center_vertical"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/logo_lamontana"
+        android:adjustViewBounds="true"
+        android:scaleType="centerInside" />
+
+    <!-- Centro reservado para el futuro "user chip" -->
+    <FrameLayout
+        android:id="@+id/user_chip_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
+    <!-- Ancla que ya usabas (si lo necesitás para algún PopupMenu propio) -->
     <View
         android:id="@+id/action_nav_anchor"
         android:layout_width="0dp"
