@@ -1,5 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+ =============================================================
+ Archivo: activity_catalog.xml
+ Ubicación: app/src/main/res/layout/
+
+ ¿De qué se encarga este archivo?
+   - Define la interfaz de la pantalla principal de la app “La Montaña”:
+     el **Catálogo de productos y servicios**.
+   - Permite al usuario ver las opciones disponibles (impresiones, anillados, etc.),
+     filtrarlas por tipo, agregar productos al carrito y visualizar un resumen rápido.
+
+ Relación con las clases:
+   - Controlada por la clase MainActivity.java, que:
+       ▪ Carga los datos simulados (mock) de productos.
+       ▪ Renderiza dinámicamente los ítems dentro del contenedor llCatalogContainer.
+       ▪ Gestiona los botones de filtro y acciones del carrito.
+
+ Estructura general:
+   1. AppBar (include_app_bar.xml): barra superior reutilizable con logo y título.
+   2. Panel de carrito superior: muestra cantidad, total y botones “Ver” / “Vaciar”.
+   3. Título de la pantalla (tvTitle).
+   4. Filtros de categoría (todo / impresiones / anillados).
+   5. Título de catálogo.
+   6. Lista scrolleable del catálogo con items inflados dinámicamente.
+   7. Footer (include_footer.xml) con datos institucionales o de contacto.
+
+ Diseño:
+   - Usa ConstraintLayout para asegurar una estructura adaptable.
+   - ScrollView para recorrer todo el listado de productos verticalmente.
+   - Colores, márgenes y tipografías definidos en recursos (res/values/).
+   - Fondo: @color/brand_background, coherente con la identidad visual.
+
+ =============================================================
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root"
     android:layout_width="match_parent"
@@ -7,7 +42,10 @@
     android:padding="@dimen/spacing_md"
     android:background="@color/brand_background">
 
-    <!-- App Bar -->
+    <!--
+        Barra superior reutilizable con logo y título.
+        Incluye posibles iconos de menú o navegación.
+    -->
     <include
         android:id="@+id/includeToolbar"
         layout="@layout/include_app_bar"
@@ -15,7 +53,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 🔶 Carrito arriba (full width) -->
+    <!--
+        Panel superior del carrito:
+        - Muestra cantidad de ítems y total general.
+        - Permite ver el carrito completo o vaciarlo.
+        - Se actualiza dinámicamente desde MainActivity.updateCartUi().
+    -->
     <LinearLayout
         android:id="@+id/panelCart"
         android:layout_width="0dp"
@@ -27,6 +70,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- Encabezado del carrito -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,17 +88,17 @@
                 android:textSize="@dimen/text_lg"
                 android:textColor="@color/brand_text_primary" />
 
-            <!-- Badge de cantidad -->
+            <!-- Badge de cantidad de ítems -->
             <TextView
                 android:id="@+id/tvCartCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="(0 ítems)"
                 android:textColor="@color/brand_text_primary"
-                android:layout_marginEnd="@dimen/spacing_sm"/>
+                android:layout_marginEnd="@dimen/spacing_sm" />
         </LinearLayout>
 
-        <!-- Total + Ver carrito + Vaciar -->
+        <!-- Total del carrito + botones de acción -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -62,6 +106,7 @@
             android:gravity="center_vertical"
             android:layout_marginTop="@dimen/spacing_sm">
 
+            <!-- Total acumulado -->
             <TextView
                 android:id="@+id/tvTotal"
                 android:layout_width="0dp"
@@ -71,22 +116,25 @@
                 android:textStyle="bold"
                 android:textColor="@color/brand_text_primary" />
 
+            <!-- Botones: Ver carrito y Vaciar -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnViewCart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/view_cart"
-                android:layout_marginEnd="@dimen/spacing_sm"/>
+                android:layout_marginEnd="@dimen/spacing_sm" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnClearCart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/cart_clear"/>
+                android:text="@string/cart_clear" />
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Título de pantalla -->
+    <!--
+        Título general de la pantalla, separado del panel del carrito.
+    -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="0dp"
@@ -95,12 +143,15 @@
         android:textSize="@dimen/text_xl"
         android:textStyle="bold"
         android:textColor="@color/brand_text_primary"
+        android:layout_marginTop="@dimen/spacing_sm"
         app:layout_constraintTop_toBottomOf="@id/panelCart"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="@dimen/spacing_sm"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Filtros -->
+    <!--
+        Botones de filtro por categoría de producto.
+        Se conectan con los listeners en MainActivity para filtrar la lista.
+    -->
     <LinearLayout
         android:id="@+id/llFilters"
         android:layout_width="0dp"
@@ -117,23 +168,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/filter_all"
-            android:layout_marginEnd="@dimen/spacing_xs"/>
+            android:layout_marginEnd="@dimen/spacing_xs" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnFilterPrint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/filter_print"
-            android:layout_marginEnd="@dimen/spacing_xs"/>
+            android:layout_marginEnd="@dimen/spacing_xs" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnFilterBinding"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/filter_binding"/>
+            android:text="@string/filter_binding" />
     </LinearLayout>
 
-    <!-- Título catálogo -->
+    <!--
+        Subtítulo que introduce el listado del catálogo.
+    -->
     <TextView
         android:id="@+id/tvCatalogTitle"
         android:layout_width="0dp"
@@ -142,12 +195,15 @@
         android:textStyle="bold"
         android:textSize="@dimen/text_lg"
         android:textColor="@color/brand_text_primary"
+        android:layout_marginTop="@dimen/spacing_sm"
         app:layout_constraintTop_toBottomOf="@id/llFilters"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="@dimen/spacing_sm"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Footer común  -->
+    <!--
+        Footer común reutilizable (datos de contacto / branding).
+        Permite mantener consistencia entre pantallas.
+    -->
     <include
         android:id="@+id/includeFooter"
         layout="@layout/include_footer"
@@ -159,8 +215,11 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintVertical_bias="1.0" />
 
-
-    <!-- Catálogo con scroll a ancho completo -->
+    <!--
+        Catálogo de productos scrolleable:
+        MainActivity infla dinámicamente los ítems (item_catalog.xml)
+        dentro del LinearLayout llCatalogContainer.
+    -->
     <ScrollView
         android:id="@+id/svCatalog"
         android:layout_width="0dp"
@@ -170,12 +229,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-    <LinearLayout
+        <LinearLayout
             android:id="@+id/llCatalogContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="@dimen/spacing_lg"/>
+            android:paddingBottom="@dimen/spacing_lg" />
     </ScrollView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
