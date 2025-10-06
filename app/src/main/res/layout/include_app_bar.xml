@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.appbar.MaterialToolbar xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.appbar.MaterialToolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/appToolbar"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:background="@color/brand_brown"
     android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
-    app:logo="@drawable/logo_lamontana"
     app:title=""
-    app:menu="@menu/menu_top">
+    app:titleCentered="false"
+    app:menu="@menu/menu_top"
+    app:navigationIcon="@drawable/logo_lamontana"
+    app:navigationContentDescription="@string/app_name"
+    app:contentInsetStartWithNavigation="0dp">
 
-    <!-- espacio para el PopupMenu (a la derecha) -->
     <View
         android:id="@+id/action_nav_anchor"
         android:layout_width="0dp"
