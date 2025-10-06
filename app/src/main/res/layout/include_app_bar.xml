@@ -1,4 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+ =============================================================
+ Archivo: include_app_bar.xml
+ Ubicación: app/src/main/res/layout/
+
+ ¿De qué se encarga este archivo?
+   - Define la barra superior (App Bar o Toolbar) reutilizable en todas
+     las pantallas de la app “La Montaña” (por ejemplo, catálogo y carrito).
+   - Proporciona el logo de la marca, el menú superior y un espacio central
+     reservado para elementos futuros como el “chip” de usuario o notificaciones.
+
+ Relación con las clases:
+   - Incluida en activity_catalog.xml y activity_cart.xml mediante <include>.
+   - Puede ser configurada desde cada Activity con `setSupportActionBar(toolbar)`
+     para mostrar título, subtítulo o acciones personalizadas.
+
+ Estructura general:
+   1. MaterialToolbar → contenedor principal compatible con Material 3.
+   2. ImageView → logo de la app, alineado a la izquierda.
+   3. FrameLayout → espacio central para futuros componentes dinámicos
+      (ej. nombre del usuario, avatar o chip de sesión).
+   4. View invisible → ancla para popups o menús contextuales.
+
+ Diseño:
+   - Usa el color de marca principal (@color/brand_brown) como fondo.
+   - El tema oscuro de Material3 mejora el contraste de íconos y textos.
+   - Incluye el menú superior definido en @menu/menu_top.
+
+ =============================================================
+-->
 <com.google.android.material.appbar.MaterialToolbar
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -13,7 +43,10 @@
     app:contentInsetStart="16dp"
     app:contentInsetEnd="16dp">
 
-    <!-- Logo chico, fijo a la izquierda -->
+    <!--
+        Logo de “La Montaña”.
+        Se mantiene fijo a la izquierda para reforzar identidad visual.
+    -->
     <ImageView
         android:id="@+id/ivLogo"
         android:layout_width="32dp"
@@ -24,14 +57,22 @@
         android:adjustViewBounds="true"
         android:scaleType="centerInside" />
 
-    <!-- Centro reservado para el futuro "user chip" -->
+    <!--
+        Contenedor central para futuros elementos como:
+        - Chip de usuario logueado
+        - Selector de sucursal
+        - Estado de conexión (offline/online)
+    -->
     <FrameLayout
         android:id="@+id/user_chip_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
 
-    <!-- Ancla que ya usabas (si lo necesitás para algún PopupMenu propio) -->
+    <!--
+        Vista invisible usada como ancla para PopupMenus o Tooltips.
+        Permite que otras clases (ej. MainActivity) ubiquen menús personalizados.
+    -->
     <View
         android:id="@+id/action_nav_anchor"
         android:layout_width="0dp"
