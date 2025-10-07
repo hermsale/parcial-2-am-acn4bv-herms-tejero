@@ -81,10 +81,6 @@
         <item name="cornerRadius">16dp</item>
     </style>
 
-    <!-- Botón de acción destructiva (Vaciar carrito, eliminar, etc.) -->
-    <style name="Widget.Parcial1.DangerButton" parent="Widget.Parcial1.BrandButton">
-        <item name="backgroundTint">@color/brand_red</item>
-        <item name="rippleColor">@color/brand_red_dark</item>
-    </style>
+
 
 </resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Botón de acción destructiva (Vaciar carrito, eliminar, etc.) -->
+    <style name="Widget.Parcial1.DangerButton" parent="Widget.Parcial1.BrandButton">
+        <item name="backgroundTint">@color/brand_red</item>
+        <item name="rippleColor">@color/brand_red_dark</item>
+    </style>
+
+</resources>
