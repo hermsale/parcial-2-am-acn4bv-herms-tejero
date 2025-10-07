@@ -1,0 +1,4 @@
+- Agregar al carrito, un tacho de basura individual para cada articulo.
+- revisar estetica en general, de cada boton.
+- menú hamburguesa, mostrar un menú de usuario (historial, saludo, etc)
+- cambiar el nombre del package, por: lamontaña
