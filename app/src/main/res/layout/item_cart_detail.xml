@@ -161,19 +161,19 @@
             <!-- Botón eliminar ítem -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRemoveItem"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                style="?attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_xs"
+                android:contentDescription="delete_item"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
                 android:padding="0dp"
+                app:cornerRadius="8dp"
                 app:icon="@drawable/baseline_delete_24"
-            app:iconTint="@color/brand_red"
-            app:cornerRadius="8dp"
-            android:contentDescription="delete_item"
-            android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:layout_marginStart="@dimen/spacing_xs" />
+                app:iconTint="@color/brand_red" />
         </LinearLayout>
     </LinearLayout>
 

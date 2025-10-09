@@ -1,3 +1,3 @@
-- Agregar al carrito, un tacho de basura individual para cada articulo.
-- revisar estetica en general, de cada boton.
+- Agregar al carrito, un tacho de basura individual para cada articulo. - ok
+- revisar estetica en general, de cada boton. - ok
 - menú hamburguesa, mostrar un menú de usuario (historial, saludo, etc)
