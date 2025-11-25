@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.parcial_1"
+    namespace = "com.example.lamontana"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.parcial_1"
+        applicationId = "com.example.lamontana"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

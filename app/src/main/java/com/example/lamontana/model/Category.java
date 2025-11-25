@@ -1,9 +1,9 @@
-package com.example.parcial_1.model;
+package com.example.lamontana.model;
 
 /*
  * ============================================================
  * Archivo: Category.java
- * Paquete: com.example.parcial_1.model
+ * Paquete: com.example.lamontana.model
  * ------------------------------------------------------------
  * ¿De qué se encarga?
  *   - Define las categorías de productos disponibles en la app.

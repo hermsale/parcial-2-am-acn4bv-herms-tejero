@@ -1,4 +1,4 @@
-package com.example.parcial_1;
+package com.example.lamontana;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,9 +12,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.example.parcial_1.data.CartStore;
-import com.example.parcial_1.model.Category;
-import com.example.parcial_1.model.Product;
+import com.example.lamontana.data.CartStore;
+import com.example.lamontana.model.Category;
+import com.example.lamontana.model.Product;
 import com.google.android.material.button.MaterialButton;
 
 import java.text.NumberFormat;
@@ -25,7 +25,7 @@ import java.util.Locale;
 /*
  * ============================================================
  * Archivo: MainActivity.java
- * Paquete: com.example.parcial_1
+ * Paquete: com.example.lamontana
  *
  * ¿De qué se encarga este archivo?
  *  - Implementa la pantalla principal de Catálogo de la app "La Montaña".

@@ -1,9 +1,9 @@
-package com.example.parcial_1.model;
+package com.example.lamontana.model;
 
 /*
  * ============================================================
  * Archivo: Product.java
- * Paquete: com.example.parcial_1.model
+ * Paquete: com.example.lamontana.model
  * ------------------------------------------------------------
  * ¿De qué se encarga?
  *   - Representa un producto o servicio disponible en el Catálogo.

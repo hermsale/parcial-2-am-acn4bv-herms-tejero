@@ -1,9 +1,9 @@
-package com.example.parcial_1.model;
+package com.example.lamontana.model;
 
 /*
  * ============================================================
  * Archivo: CartItem.java
- * Paquete: com.example.parcial_1.model
+ * Paquete: com.example.lamontana.model
  * ------------------------------------------------------------
  * ¿De qué se encarga?
  *   - Representa una línea individual del carrito de compras.

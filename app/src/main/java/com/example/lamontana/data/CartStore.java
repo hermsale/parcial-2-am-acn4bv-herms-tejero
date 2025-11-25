@@ -1,7 +1,7 @@
-package com.example.parcial_1.data;
+package com.example.lamontana.data;
 
-import com.example.parcial_1.model.CartItem;
-import com.example.parcial_1.model.Product;
+import com.example.lamontana.model.CartItem;
+import com.example.lamontana.model.Product;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +12,7 @@ import java.util.Iterator;
 /*
  * ============================================================
  * Archivo: CartStore.java
- * Paquete: com.example.parcial_1.data
+ * Paquete: com.example.lamontana.data
  * ------------------------------------------------------------
  * ¿De qué se encarga?
  *   - Provee un "carrito" en memoria (patrón Singleton) para

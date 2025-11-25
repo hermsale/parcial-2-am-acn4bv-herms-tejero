@@ -1,4 +1,4 @@
-package com.example.parcial_1;
+package com.example.lamontana;
 
 import org.junit.Test;
 

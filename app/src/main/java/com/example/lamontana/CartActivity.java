@@ -1,4 +1,4 @@
-package com.example.parcial_1;
+package com.example.lamontana;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -15,9 +15,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.example.parcial_1.data.CartStore;
-import com.example.parcial_1.model.CartItem;
-import com.example.parcial_1.model.Product;
+import com.example.lamontana.data.CartStore;
+import com.example.lamontana.model.CartItem;
+import com.example.lamontana.model.Product;
 import com.google.android.material.button.MaterialButton;
 
 
@@ -28,7 +28,7 @@ import java.util.Locale;
 /*
  * ============================================================
  * Archivo: CartActivity.java
- * Paquete: com.example.parcial_1
+ * Paquete: com.example.lamontana
  * ------------------------------------------------------------
  * ¿De qué se encarga?
  *   - Controla la pantalla "Carrito". Muestra los ítems agregados,

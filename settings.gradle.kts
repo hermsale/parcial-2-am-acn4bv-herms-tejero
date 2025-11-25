@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "parcial_1"
+rootProject.name = "lamontana"
 include(":app")
