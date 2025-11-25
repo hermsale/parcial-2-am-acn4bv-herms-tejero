@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ =============================================================================
+ Archivo: input_background.xml
+ Ubicación: app/src/main/res/drawable/
+
+ Responsabilidad:
+   - Definir el fondo de los campos de texto (EditText) del formulario de Login.
+
+ Relación con otros recursos:
+   - Usado por el estilo LoginInputStyle definido en styles.xml.
+   - Referenciado desde activity_login.xml para los campos de email y contraseña.
+
+ Notas:
+   - Utiliza los colores definidos en colors.xml:
+       ▪ @color/brand_surface como fondo.
+       ▪ @color/brand_brown como borde.
+
+ =============================================================================
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Color de fondo del input -->
+    <solid android:color="@color/brand_surface" />
+
+    <!-- Bordes redondeados -->
+    <corners android:radius="8dp" />
+
+    <!-- Borde marrón fino -->
+    <stroke
+        android:width="1dp"
+        android:color="@color/brand_brown" />
+
+</shape>

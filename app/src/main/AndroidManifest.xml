@@ -13,7 +13,7 @@
        ▪ Permisos, componentes y configuraciones base.
 
  Relación con las clases:
-   - Asocia las clases Java de Activities (MainActivity y CartActivity)
+   - Asocia las clases Java de Activities (LoginActivity, MainActivity y CartActivity)
      con el sistema Android.
    - Define qué Activity actúa como punto de entrada (MAIN + LAUNCHER).
 
@@ -34,7 +34,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
-            android:allowBackup="true"
+        android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -44,11 +44,11 @@
         android:theme="@style/Theme.Parcial_1">
 
         <!-- ========================================================= -->
-        <!-- Activity principal: Catálogo -->
+        <!-- Activity inicial: Login -->
         <!-- ========================================================= -->
         <activity
-            android:name=".MainActivity"
-            android:exported="true"> <!-- Obligatorio en Android 12+ -->
+            android:name=".ui.LoginActivity"
+            android:exported="true">
 
             <!--
                 Filtro de intención:
@@ -62,9 +62,17 @@
         </activity>
 
         <!-- ========================================================= -->
+        <!-- Activity principal anterior: Catálogo -->
+        <!-- (Ya no es launcher, se abre tras el login) -->
+        <!-- ========================================================= -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" />
+
+        <!-- ========================================================= -->
         <!-- Segunda Activity: Carrito de compras -->
         <!-- ========================================================= -->
         <activity android:name=".CartActivity" />
+
     </application>
 </manifest>
-

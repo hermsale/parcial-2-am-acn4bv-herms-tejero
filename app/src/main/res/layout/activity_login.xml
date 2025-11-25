@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Archivo: activity_login.xml
+  Ubicación: app/src/main/res/layout/
+
+  Responsabilidad:
+    - Definir el diseño visual de la pantalla de inicio de sesión (Login).
+    - Contener los campos de email y contraseña, y el botón de iniciar sesión.
+
+  Alcance:
+    - Usado por LoginActivity como layout principal.
+    - Forma parte del flujo inicial de autenticación del usuario.
+
+  Estructura visual:
+    - ConstraintLayout como contenedor raíz.
+    - Fondo general con color crema de la marca (@color/brand_background).
+    - LinearLayout centrado con:
+        ▪ TextView para el título "Iniciar sesión".
+        ▪ EditText para email.
+        ▪ EditText para contraseña.
+        ▪ Button para enviar el formulario de login.
+
+  Relación con otros recursos:
+    - Usa estilos definidos en styles.xml (LoginTitleText, LoginInputStyle, LoginButtonStyle).
+    - Los campos de texto utilizan el fondo input_background.xml.
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLogin"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/brand_background"
+    android:padding="24dp">
+
+    <!-- Contenedor principal del formulario -->
+    <LinearLayout
+        android:id="@+id/loginContainer"
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Título de la pantalla -->
+        <TextView
+            android:id="@+id/tvLoginTitle"
+            style="@style/LoginTitleText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Iniciar sesión" />
+
+        <!-- Campo de email -->
+        <EditText
+            android:id="@+id/etEmail"
+            style="@style/LoginInputStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email"
+            android:inputType="textEmailAddress" />
+
+        <!-- Campo de contraseña -->
+        <EditText
+            android:id="@+id/etPassword"
+            style="@style/LoginInputStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Contraseña"
+            android:inputType="textPassword" />
+
+        <!-- Botón de iniciar sesión -->
+        <Button
+            android:id="@+id/btnLogin"
+            style="@style/LoginButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ingresar" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

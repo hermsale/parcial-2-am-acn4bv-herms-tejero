@@ -7,4 +7,35 @@
         <item name="rippleColor">@color/brand_red_dark</item>
     </style>
 
+
+    <!-- Estilo para el título principal de la pantalla de Login -->
+    <style name="LoginTitleText">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/brand_brown_dark</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_marginBottom">24dp</item>
+    </style>
+
+    <!-- Estilo base para los campos de texto del formulario de Login -->
+    <style name="LoginInputStyle">
+        <!-- width/height los pondremos directamente en el XML -->
+        <item name="android:padding">12dp</item>
+        <item name="android:background">@drawable/input_background</item>
+        <item name="android:textColor">@color/brand_text_primary</item>
+        <item name="android:layout_marginBottom">12dp</item>
+    </style>
+
+    <!-- Estilo para el botón principal de Login -->
+    <style name="LoginButtonStyle">
+        <!-- width/height los pondremos directamente en el XML -->
+        <item name="android:padding">12dp</item>
+        <item name="android:background">@color/brand_orange</item>
+        <item name="android:textColor">@color/brand_text_on_primary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_marginTop">8dp</item>
+    </style>
+
+
+
 </resources>
