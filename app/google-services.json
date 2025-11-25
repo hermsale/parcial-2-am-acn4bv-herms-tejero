@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1092991854848",
+    "project_id": "la-montana-bd",
+    "storage_bucket": "la-montana-bd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1092991854848:android:88b0ca9a38287b27f2abe5",
+        "android_client_info": {
+          "package_name": "com.example.lamontana"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZDfMWpF_PdlwXybrS22eIuxLM9b-0Nqs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
