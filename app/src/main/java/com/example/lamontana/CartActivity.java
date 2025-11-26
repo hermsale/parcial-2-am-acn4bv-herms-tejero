@@ -34,39 +34,43 @@ import java.util.Locale;
  * ------------------------------------------------------------
  * ¿De qué se encarga?
  *   - Controla la pantalla "Carrito". Muestra los ítems agregados,
- *     permite modificar cantidades (+/-), simular carga de PDF (copyBased),
- *     y realizar pedido(s) (simulado).
- *   - A partir de ahora, también verifica que el usuario esté logueado con
- *     Firebase Auth antes de mostrar el carrito.
+ *     permite modificar cantidades (+/-), eliminar productos del carrito
+ *     y realizar todos los pedidos (simulado).
+ *   - Verifica que el usuario esté logueado con Firebase Auth antes
+ *     de mostrar el carrito.
  *
  * ¿Qué clases usa?
  *   - CartStore (data): singleton en memoria con el estado del carrito.
  *   - CartItem/Product (model): modelos de dominio que se renderizan en UI.
  *   - FirebaseAuth/FirebaseUser: para comprobar que haya usuario autenticado.
  *
- * ¿Qué métodos principales tiene?
+ * Métodos principales:
  *   - onCreate():
  *       * Verifica que el usuario esté logueado (ensureUserLoggedIn()).
  *       * Si no hay usuario -> redirige a LoginActivity y termina.
- *       * Si hay usuario -> configura toolbar, listeners y dibuja el carrito.
+ *       * Si hay usuario -> configura la UI y dibuja el carrito.
  *   - ensureUserLoggedIn():
  *       * Consulta FirebaseAuth y, si no hay usuario, navega a LoginActivity.
- *   - renderCart(): infla dinámicamente filas (item_cart_detail) por cada CartItem.
- *   - rebindRowAfterChange(View, Product): refresca cantidad/total de una fila.
- *   - updateGrandTotal(): recalcula total global y habilita/deshabilita acciones.
- *   - onPlaceAllOrders(): confirma “realizar todos” y limpia carrito (simulado).
- *   - onToolbarMenuClick(MenuItem): popup de navegación Catálogo/Carrito.
+ *   - renderCart():
+ *       * Infla dinámicamente filas (item_cart_detail) por cada CartItem.
+ *       * Conecta listeners de +/-, eliminar producto y “realizar todos”.
+ *   - rebindRowAfterChange(View, Product):
+ *       * Refresca cantidad/total de una fila tras un cambio puntual.
+ *   - updateGrandTotal():
+ *       * Recalcula total global y habilita/deshabilita el botón “Realizar todos”.
+ *   - onPlaceAllOrders():
+ *       * Simula realizar todos los pedidos y limpia el carrito.
  *
  * ¿Cómo se relaciona con otras vistas?
  *   - Viene desde Catálogo (MainActivity) vía "Ver carrito".
  *   - Comparte el estado con MainActivity a través de CartStore.
  *
- * Notas de implementación:
+ * Notas:
  *   - No hay backend; todo es en memoria.
- *   - Se asegura que solo usuarios autenticados puedan ver el carrito.
+ *   - Se eliminaron referencias a botones que no existen en el layout
+ *     (btnDetectFromPdf y btnPlaceOrder) para evitar errores de compilación.
  * ============================================================
  */
-
 public class CartActivity extends AppCompatActivity {
 
     // Contenedor vertical donde se agregan dinámicamente las filas del carrito
@@ -83,14 +87,13 @@ public class CartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // 1) Verificar si el usuario está logueado en Firebase Auth.
-        //    Si no lo está, redirigimos a LoginActivity y no mostramos el carrito.
         if (!ensureUserLoggedIn()) {
             return;
         }
 
         setContentView(R.layout.activity_cart);
 
-        // ---- Toolbar / AppBar (reutilizable) ----
+        // ---- Toolbar / AppBar (si está presente en el layout) ----
         Toolbar toolbar = findViewById(R.id.appToolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -133,7 +136,6 @@ public class CartActivity extends AppCompatActivity {
     private boolean ensureUserLoggedIn() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null) {
-            // No hay usuario autenticado: enviar a la pantalla de Login.
             Intent intent = new Intent(this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
@@ -149,7 +151,6 @@ public class CartActivity extends AppCompatActivity {
      */
     private boolean onToolbarMenuClick(MenuItem item) {
         if (item.getItemId() == R.id.action_nav) {
-            // Ancla del popup (si no existiera, caemos al toolbar)
             View anchor = findViewById(R.id.action_nav);
             if (anchor == null) anchor = findViewById(R.id.appToolbar);
 
@@ -179,7 +180,7 @@ public class CartActivity extends AppCompatActivity {
     /**
      * Dibuja toda la lista del carrito.
      * - Limpia el contenedor y vuelve a inflar una fila por cada CartItem.
-     * - Conecta listeners de +/-, subir PDF y “realizar pedido”.
+     * - Conecta listeners de +/-, eliminar producto.
      */
     private void renderCart() {
         if (llCartListContainer == null) return;
@@ -202,9 +203,7 @@ public class CartActivity extends AppCompatActivity {
             TextView tvQty = row.findViewById(R.id.tvQty);
             MaterialButton btnMinus = row.findViewById(R.id.btnMinus);
             MaterialButton btnPlus = row.findViewById(R.id.btnPlus);
-            MaterialButton btnUploadPdf = row.findViewById(R.id.btnDetectFromPdf);
-            MaterialButton btnPlaceOrder = row.findViewById(R.id.btnPlaceOrder);
-            // Botón para eliminar items
+            // Botón para eliminar items (este sí existe en tu layout)
             MaterialButton btnRemoveItem = row.findViewById(R.id.btnRemoveItem);
 
             Product p = ci.product;
@@ -214,9 +213,17 @@ public class CartActivity extends AppCompatActivity {
             if (iv != null) iv.setImageResource(p.imageRes);
             if (tvName != null) tvName.setText(p.name);
             if (tvDesc != null) tvDesc.setText(p.desc);
-            if (tvUnitPrice != null) tvUnitPrice.setText(getString(R.string.unit_price_format, ars.format(p.price)));
+            if (tvUnitPrice != null) {
+                tvUnitPrice.setText(
+                        getString(R.string.unit_price_format, ars.format(p.price))
+                );
+            }
             if (tvQty != null) tvQty.setText(String.valueOf(ci.qty));
-            if (tvItemTotal != null) tvItemTotal.setText(getString(R.string.item_total_format, ars.format(ci.qty * p.price)));
+            if (tvItemTotal != null) {
+                tvItemTotal.setText(
+                        getString(R.string.item_total_format, ars.format(ci.qty * p.price))
+                );
+            }
 
             // Listener: disminuir cantidad
             if (btnMinus != null) {
@@ -236,41 +243,7 @@ public class CartActivity extends AppCompatActivity {
                 });
             }
 
-            // Subida de PDF (solo si el producto es "copyBased")
-            if (btnUploadPdf != null) {
-                if (p.copyBased) {
-                    btnUploadPdf.setVisibility(View.VISIBLE);
-                    btnUploadPdf.setText(getString(R.string.upload_pdf));
-                    btnUploadPdf.setOnClickListener(v -> {
-                        // Simulación: archivo PDF con N hojas
-                        String fakeFileName = "Trabajo.pdf";
-                        int fakePages = 37;
-                        CartStore.get().setQty(p, fakePages);
-                        new AlertDialog.Builder(this)
-                                .setTitle("PDF cargado")
-                                .setMessage(fakeFileName + " (" + fakePages + " hojas)\nCantidad actualizada.")
-                                .setPositiveButton(getString(R.string.ok), null)
-                                .show();
-                        rebindRowAfterChange(row, p);
-                        updateGrandTotal();
-                    });
-                } else {
-                    btnUploadPdf.setVisibility(View.GONE);
-                }
-            }
-
-            // Listener: realizar pedido (simulado por ítem)
-            if (btnPlaceOrder != null) {
-                btnPlaceOrder.setOnClickListener(v -> {
-                    new AlertDialog.Builder(this)
-                            .setTitle("Procesando pedido")
-                            .setMessage("Redireccionado a vista Pagos… (simulado)")
-                            .setPositiveButton(getString(R.string.ok), null)
-                            .show();
-                });
-            }
-
-            // eliminar producto del carrito
+            // Listener: eliminar producto del carrito
             if (btnRemoveItem != null) {
                 btnRemoveItem.setOnClickListener(v -> {
                     new AlertDialog.Builder(this)
@@ -325,7 +298,9 @@ public class CartActivity extends AppCompatActivity {
     private void updateGrandTotal() {
         int total = CartStore.get().getTotalAmount();
         if (tvCartGrandTotal != null) {
-            tvCartGrandTotal.setText(getString(R.string.cart_total_label_format, ars.format(total)));
+            tvCartGrandTotal.setText(
+                    getString(R.string.cart_total_label_format, ars.format(total))
+            );
         }
 
         MaterialButton btnPlaceAll = findViewById(R.id.btnPlaceAllOrders);
