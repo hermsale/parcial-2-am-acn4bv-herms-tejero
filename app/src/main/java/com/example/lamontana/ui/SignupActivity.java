@@ -11,14 +11,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.lamontana.MainActivity;
 import com.example.lamontana.R;
 import com.example.lamontana.viewmodel.SignupViewModel;
 
 import com.example.lamontana.data.user.UserStore;
 
 // para firebase
-import com.google.firebase.auth.FirebaseAuth;
+
 /* -----------------------------------------------------------------------------
   Archivo: SignupActivity.java
   Responsabilidad:
@@ -262,7 +261,7 @@ public class SignupActivity extends AppCompatActivity {
         UserStore.get().setBasicData(uid, name, email);
 
         // Navegar a MainActivity
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, CatalogActivity.class);
         startActivity(intent);
 
         finish(); // Cierra SignupActivity

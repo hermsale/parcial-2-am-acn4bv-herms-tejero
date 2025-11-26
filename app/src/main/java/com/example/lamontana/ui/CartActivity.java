@@ -1,4 +1,4 @@
-package com.example.lamontana;
+package com.example.lamontana.ui;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -12,11 +12,10 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.lamontana.R;
 import com.example.lamontana.data.CartStore;
 import com.example.lamontana.model.CartItem;
 import com.example.lamontana.model.Product;
-import com.example.lamontana.ui.LoginActivity;
-import com.example.lamontana.ui.ProfileActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

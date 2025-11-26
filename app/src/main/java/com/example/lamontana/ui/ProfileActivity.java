@@ -11,10 +11,8 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.lamontana.MainActivity;
 import com.example.lamontana.R;
 import com.example.lamontana.data.user.UserStore;
-import com.example.lamontana.ui.LoginActivity;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -69,7 +67,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         findViewById(R.id.btnInicio).setOnClickListener(v -> {
             closeMenu();
-            startActivity(new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, CatalogActivity.class));
             finish();
         });
 
@@ -78,7 +76,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         findViewById(R.id.btnMiCarrito).setOnClickListener(v -> {
             closeMenu();
-            startActivity(new Intent(this, com.example.lamontana.CartActivity.class));
+            startActivity(new Intent(this, CartActivity.class));
         });
 
         findViewById(R.id.btnCerrarSesion).setOnClickListener(v -> {

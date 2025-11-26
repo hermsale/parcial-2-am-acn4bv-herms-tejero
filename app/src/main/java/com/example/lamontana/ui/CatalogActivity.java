@@ -1,4 +1,4 @@
-package com.example.lamontana;
+package com.example.lamontana.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,11 +12,10 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.lamontana.R;
 import com.example.lamontana.data.CartStore;
 import com.example.lamontana.model.Category;
 import com.example.lamontana.model.Product;
-import com.example.lamontana.ui.LoginActivity;
-import com.example.lamontana.ui.ProfileActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -69,7 +68,7 @@ import java.util.Locale;
  * ============================================================
  */
 
-public class MainActivity extends AppCompatActivity {
+public class CatalogActivity extends AppCompatActivity {
 
     // ---------- Referencias de UI ----------
     private LinearLayout llCatalogContainer;
@@ -123,14 +122,14 @@ public class MainActivity extends AppCompatActivity {
         if (btnMisDatos != null) {
             btnMisDatos.setOnClickListener(v -> {
                 closeMenu();
-                startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+                startActivity(new Intent(CatalogActivity.this, ProfileActivity.class));
             });
         }
 
         if (btnMiCarrito != null) {
             btnMiCarrito.setOnClickListener(v -> {
                 closeMenu();
-                startActivity(new Intent(MainActivity.this, CartActivity.class));
+                startActivity(new Intent(CatalogActivity.this, CartActivity.class));
             });
         }
 
@@ -139,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
                 closeMenu();
                 // Cerrar sesión en Firebase y volver al login
                 FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                Intent intent = new Intent(CatalogActivity.this, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();
@@ -182,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (btnViewCart != null) {
             btnViewCart.setOnClickListener(v ->
-                    startActivity(new Intent(MainActivity.this, CartActivity.class))
+                    startActivity(new Intent(CatalogActivity.this, CartActivity.class))
             );
         }
 

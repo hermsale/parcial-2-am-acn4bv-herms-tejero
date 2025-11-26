@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.lamontana.MainActivity;
 import com.example.lamontana.R;
 import com.example.lamontana.viewmodel.LoginViewModel;
 
@@ -223,7 +222,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param email Email del usuario logueado (opcional, se pasa como extra).
      */
     private void navigateToMain(String email) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, CatalogActivity.class);
         intent.putExtra("email", email);
         startActivity(intent);
 

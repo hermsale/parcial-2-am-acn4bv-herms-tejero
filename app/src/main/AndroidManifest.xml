@@ -12,9 +12,11 @@
        ▪ Permisos, componentes y configuraciones base.
 
  Relación con las clases:
-   - Asocia las clases Java de Activities (LoginActivity, MainActivity y CartActivity)
-     con el sistema Android.
-   - Define qué Activity actúa como punto de entrada (MAIN + LAUNCHER).
+   - Asocia las clases Java de Activities (LoginActivity, CatalogActivity,
+     CartActivity, ProfileActivity y SignupActivity) con el sistema Android.
+   - Define qué Activity actúa como punto de entrada (MAIN + LAUNCHER):
+       ▪ LoginActivity → pantalla inicial.
+   - CatalogActivity funciona como **pantalla principal de uso** tras el login.
 
  Diseño general:
    1. Elemento raíz <manifest> → define espacio de nombres y nivel de permisos.
@@ -40,37 +42,40 @@
         android:theme="@style/Theme.Parcial_1">
 
         <!-- ========================================================= -->
-        <!-- Activity inicial: Login -->
+        <!-- Activity inicial: Login (entry point de la app)           -->
         <!-- ========================================================= -->
         <activity
             android:name=".ui.LoginActivity"
             android:exported="true">
-
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- Activity Signup: Pantalla de registro -->
+        <!-- Activity Signup: Pantalla de registro (solo interna) -->
         <activity
             android:name=".ui.SignupActivity"
             android:exported="false" />
 
         <!-- ========================================================= -->
-        <!-- Activity principal anterior: Catálogo -->
-        <!-- (Ya no es launcher, se abre tras el login) -->
+        <!-- Pantalla principal de uso: Catálogo                      -->
+        <!-- (se abre tras el login correcto)                         -->
         <!-- ========================================================= -->
         <activity
-            android:name=".MainActivity"
-            android:exported="true" />
+            android:name=".ui.CatalogActivity"
+            android:exported="false" />
 
         <!-- ========================================================= -->
-        <!-- Segunda Activity: Carrito de compras -->
+        <!-- Carrito de compras (se accede desde el catálogo o menú)  -->
         <!-- ========================================================= -->
-        <activity android:name=".CartActivity" />
+        <activity
+            android:name=".ui.CartActivity"
+            android:exported="false" />
 
+        <!-- ========================================================= -->
+        <!-- Perfil / Mis datos del usuario                           -->
+        <!-- ========================================================= -->
         <activity
             android:name=".ui.ProfileActivity"
             android:exported="false" />
