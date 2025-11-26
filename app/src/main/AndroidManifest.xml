@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
- =============================================================
+<!--=============================================================
  Archivo: AndroidManifest.xml
  Ubicación: app/src/main/
 
@@ -22,18 +21,15 @@
    2. Nodo <application> → configuración global de la app.
    3. Nodos <activity> → registro de cada pantalla.
    4. Intent-filter → indica cuál es la pantalla inicial al abrir la app.
-
- Buenas prácticas:
-   - Solo una Activity debe tener el filtro MAIN/LAUNCHER.
-   - El tema se aplica a nivel de aplicación, pero puede sobreescribirse por Activity.
-   - Mantener android:exported explícito (requerido desde Android 12+).
-
- =============================================================
--->
+ =============================================================-->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permiso necesario para que Firebase Auth/Firestore puedan usar la red -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
+        android:name=".LaMontanaApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -50,11 +46,7 @@
             android:name=".ui.LoginActivity"
             android:exported="true">
 
-            <!--
-                Filtro de intención:
-                - Marca esta Activity como el punto de entrada de la app.
-                - Se ejecuta al iniciar desde el lanzador (Launcher).
-            -->
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -65,7 +57,6 @@
         <activity
             android:name=".ui.SignupActivity"
             android:exported="false" />
-
 
         <!-- ========================================================= -->
         <!-- Activity principal anterior: Catálogo -->
