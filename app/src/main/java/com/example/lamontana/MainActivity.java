@@ -10,15 +10,14 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import com.example.lamontana.data.CartStore;
 import com.example.lamontana.model.Category;
 import com.example.lamontana.model.Product;
 import com.example.lamontana.ui.LoginActivity;
-import com.example.lamontana.ui.SignupActivity;
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -34,29 +33,39 @@ import java.util.Locale;
  *  - Implementa la pantalla principal de Catálogo de la app "La Montaña".
  *  - Muestra productos/servicios, permite filtrarlos y agregarlos al carrito.
  *  - Presenta, en el panel superior, un resumen rápido del carrito (cantidad y total).
+ *  - A partir de ahora, verifica que el usuario esté logueado con Firebase Auth
+ *    antes de mostrar el catálogo.
  *
  * Clases declaradas:
- *  - MainActivity: Activity concreta (AppCompatActivity) que actúa como pantalla de Catálogo.
+ *  - MainActivity: Activity concreta (AppCompatActivity) que actúa como pantalla
+ *    de Catálogo, protegida para usuarios autenticados.
  *
  * Métodos y responsabilidades:
- *  - onCreate(Bundle): ciclo de vida. Infla el layout, configura la Toolbar, inicializa vistas,
- *    carga datos de ejemplo (seedMockData) y renderiza el catálogo completo.
- *  - seedMockData(): crea un conjunto mínimo de productos de ejemplo para la demo sin backend.
- *  - renderCatalog(List<Product>): dibuja la lista de productos en el contenedor del catálogo e
- *    instala los listeners del botón "Agregar" para enviar items al carrito.
- *  - updateCartUi(): actualiza el panel superior del carrito (cantidad y total) leyendo CartStore.
- *  - filterAndRender(Category): aplica un filtro por categoría y vuelve a renderizar.
+ *  - onCreate(Bundle):
+ *      * Ciclo de vida.
+ *      * Verifica que haya usuario logueado (ensureUserLoggedIn()).
+ *      * Si no hay usuario → redirige a LoginActivity y termina.
+ *      * Si hay usuario → infla el layout, configura la Toolbar, inicializa vistas,
+ *        carga datos de ejemplo (seedMockData) y renderiza el catálogo completo.
+ *  - ensureUserLoggedIn():
+ *      * Consulta FirebaseAuth para ver si hay un usuario autenticado.
+ *      * Si no lo hay, redirige a LoginActivity y devuelve false.
+ *      * Si lo hay, devuelve true.
+ *  - seedMockData():
+ *      * Crea un conjunto mínimo de productos de ejemplo para la demo sin backend.
+ *  - renderCatalog(List<Product>):
+ *      * Dibuja la lista de productos en el contenedor del catálogo e instala
+ *        los listeners del botón "Agregar".
+ *  - updateCartUi():
+ *      * Actualiza el panel superior del carrito (cantidad y total) leyendo CartStore.
+ *  - filterAndRender(Category):
+ *      * Aplica un filtro por categoría y vuelve a renderizar.
  *
  * Relación con las vistas:
- *  - Vista Catálogo (activity_catalog.xml): esta Activity es su controlador. Maneja filtros y altas
- *    al carrito. Desde aquí se navega a la Vista Carrito (CartActivity) con "Ver carrito".
- *  - Vista Carrito: NO se controla desde esta clase, pero se actualiza el resumen superior cuando
- *    el usuario agrega/vacía productos en esta pantalla.
+ *  - Vista Catálogo (activity_catalog.xml): esta Activity es su controlador.
+ *    Maneja filtros y altas al carrito. Desde aquí se navega a CartActivity.
  *
- * Notas de implementación:
- *  - No hay backend: el carrito vive en memoria vía CartStore (singleton de demo).
- *  - Se evita duplicación de código creando el helper filterAndRender(Category).
- *  - Todas las operaciones de UI ocurren en el hilo principal (propio de Activities).
+ *  - Se asegura que solo usuarios autenticados (FirebaseAuth) puedan ver el catálogo.
  * ============================================================
  */
 
@@ -70,10 +79,7 @@ public class MainActivity extends AppCompatActivity {
     private MaterialButton btnAll, btnPrint, btnBinding;
     private MaterialButton btnClearCart, btnViewCart;
 
-
     // ---------- Soporte ----------
-
-//    array de productos
     private final List<Product> allProducts = new ArrayList<>();
     private LayoutInflater inflater;
     private final NumberFormat ars = NumberFormat.getCurrencyInstance(new Locale("es", "AR"));
@@ -81,19 +87,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // 1) Verificar si el usuario está logueado en Firebase Auth.
+        //    Si no lo está, lo redirigimos al Login y no mostramos el catálogo.
+        if (!ensureUserLoggedIn()) {
+            // Si no hay usuario logueado, ya redirigimos y cerramos esta Activity.
+            // No continuamos con la inicialización de la UI.
+            return;
+        }
+
         setContentView(R.layout.activity_catalog);
 
         ImageView btnMenu = findViewById(R.id.btnMenu);
-
-        btnMenu.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            startActivity(intent);
-        });
-
-
-
-
-
+        if (btnMenu != null) {
+            btnMenu.setOnClickListener(v -> {
+                // Por ahora este botón sigue llevando a la pantalla de Login.
+                // Podríamos convertirlo en "Cerrar sesión" en una mejora futura.
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+            });
+        }
 
         // Bind de vistas
         inflater = LayoutInflater.from(this);
@@ -112,21 +125,55 @@ public class MainActivity extends AppCompatActivity {
         renderCatalog(allProducts);
 
         // ---------- Listeners ----------
-        btnAll.setOnClickListener(v -> renderCatalog(allProducts));
-        btnPrint.setOnClickListener(v -> filterAndRender(Category.PRINT));
-        btnBinding.setOnClickListener(v -> filterAndRender(Category.BINDING));
+        if (btnAll != null) {
+            btnAll.setOnClickListener(v -> renderCatalog(allProducts));
+        }
+        if (btnPrint != null) {
+            btnPrint.setOnClickListener(v -> filterAndRender(Category.PRINT));
+        }
+        if (btnBinding != null) {
+            btnBinding.setOnClickListener(v -> filterAndRender(Category.BINDING));
+        }
 
-        btnClearCart.setOnClickListener(v -> {
-            CartStore.get().clear();
-            updateCartUi();
-        });
+        if (btnClearCart != null) {
+            btnClearCart.setOnClickListener(v -> {
+                CartStore.get().clear();
+                updateCartUi();
+            });
+        }
 
-        btnViewCart.setOnClickListener(v ->
-                startActivity(new Intent(MainActivity.this, CartActivity.class))
-        );
+        if (btnViewCart != null) {
+            btnViewCart.setOnClickListener(v ->
+                    startActivity(new Intent(MainActivity.this, CartActivity.class))
+            );
+        }
 
         // Estado inicial del resumen de carrito
         updateCartUi();
+    }
+
+    /**
+     * Verifica si hay un usuario logueado en FirebaseAuth.
+     * - Si NO hay usuario:
+     *     * Redirige a LoginActivity.
+     *     * Cierra esta Activity (finish()).
+     *     * Devuelve false para indicar que no se debe continuar.
+     * - Si hay usuario:
+     *     * Devuelve true y permite seguir con la configuración de la UI.
+     */
+    private boolean ensureUserLoggedIn() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            // No hay usuario autenticado: enviar a la pantalla de Login.
+            Intent intent = new Intent(this, LoginActivity.class);
+            // Opcional: limpiar el back stack para evitar volver al catálogo sin login.
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+            return false;
+        }
+        // Hay usuario logueado, se puede continuar.
+        return true;
     }
 
     /**
@@ -153,6 +200,8 @@ public class MainActivity extends AppCompatActivity {
      * Instala el click de "Agregar" para sumar al carrito y refrescar el panel superior.
      */
     private void renderCatalog(List<Product> list) {
+        if (llCatalogContainer == null) return;
+
         llCatalogContainer.removeAllViews();
 
         for (Product p : list) {
@@ -164,15 +213,17 @@ public class MainActivity extends AppCompatActivity {
             TextView tvPrice = item.findViewById(R.id.tvPrice);
             MaterialButton btnAdd = item.findViewById(R.id.btnAdd);
 
-            iv.setImageResource(p.imageRes);
-            tvName.setText(p.name);
-            tvDesc.setText(p.desc);
-            tvPrice.setText(ars.format(p.price));
+            if (iv != null) iv.setImageResource(p.imageRes);
+            if (tvName != null) tvName.setText(p.name);
+            if (tvDesc != null) tvDesc.setText(p.desc);
+            if (tvPrice != null) tvPrice.setText(ars.format(p.price));
 
-            btnAdd.setOnClickListener(v -> {
-                CartStore.get().add(p);
-                updateCartUi(); // refresca badge y total del carrito en el panel superior
-            });
+            if (btnAdd != null) {
+                btnAdd.setOnClickListener(v -> {
+                    CartStore.get().add(p);
+                    updateCartUi(); // refresca badge y total del carrito en el panel superior
+                });
+            }
 
             llCatalogContainer.addView(item);
         }
@@ -197,7 +248,11 @@ public class MainActivity extends AppCompatActivity {
     private void updateCartUi() {
         int items = CartStore.get().getTotalQty();
         int total = CartStore.get().getTotalAmount();
-        tvCartCount.setText(getString(R.string.cart_items_format, items));
-        tvTotal.setText(ars.format(total));
+        if (tvCartCount != null) {
+            tvCartCount.setText(getString(R.string.cart_items_format, items));
+        }
+        if (tvTotal != null) {
+            tvTotal.setText(ars.format(total));
+        }
     }
 }
