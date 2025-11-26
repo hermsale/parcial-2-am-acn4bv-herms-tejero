@@ -14,13 +14,12 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.lamontana.MainActivity;
 import com.example.lamontana.R;
 import com.example.lamontana.viewmodel.SignupViewModel;
-
 /* -----------------------------------------------------------------------------
   Archivo: SignupActivity.java
   Responsabilidad:
     - Mostrar el formulario de creación de usuario.
     - Validar los datos ingresados por el usuario para crear una nueva cuenta.
-    - Delegar el registro real a SignupViewModel (Firebase Auth).
+    - Delegar el registro real a SignupViewModel (Firebase Auth + Firestore).
     - Navegar nuevamente al Login o a la pantalla principal si el registro es válido.
 
   Alcance:
@@ -28,7 +27,9 @@ import com.example.lamontana.viewmodel.SignupViewModel;
     - Usa el patrón MVVM:
         * UI (SignupActivity)
         * ViewModel (SignupViewModel)
-        * Repositorio (AuthRepository con FirebaseAuth)
+        * Repositorios:
+            - AuthRepository (FirebaseAuth)
+            - UserRepository (Firestore, colección "usuarios")
 
   Lista de métodos públicos:
     - onCreate(Bundle savedInstanceState)
@@ -44,11 +45,16 @@ import com.example.lamontana.viewmodel.SignupViewModel;
     - observeViewModel()
         * Se suscribe a los LiveData de SignupViewModel (loading, signupSuccess, errorMessage).
     - attemptSignup()
-        * Valida los campos del formulario y llama a signupViewModel.signup(email, password).
+        * Valida los campos del formulario y llama a
+          signupViewModel.signup(name, email, password).
     - navigateAfterSignup(String name, String email)
         * Navega a la pantalla principal tras un registro exitoso.
 
+  Notas:
+    - La lógica de autenticación y guardado de perfil se encuentra en SignupViewModel,
+      AuthRepository y UserRepository, no dentro de la Activity.
 ----------------------------------------------------------------------------- */
+
 public class SignupActivity extends AppCompatActivity {
 
     // -------------------------------------------------------------------------
@@ -85,10 +91,6 @@ public class SignupActivity extends AppCompatActivity {
     // Inicialización de vistas
     // -------------------------------------------------------------------------
 
-    /**
-     * Vincula los elementos visuales del XML con las variables de la actividad.
-     * IMPORTANTE: los IDs deben coincidir con los definidos en activity_signup.xml.
-     */
     private void setupViews() {
         etName = findViewById(R.id.etName);
         etEmail = findViewById(R.id.etSignupEmail);
@@ -98,9 +100,6 @@ public class SignupActivity extends AppCompatActivity {
         btnGoToLogin = findViewById(R.id.btnGoToLogin);
     }
 
-    /**
-     * Configura listeners para los botones y componentes interactivos.
-     */
     private void setupListeners() {
         if (btnCreateAccount != null) {
             btnCreateAccount.setOnClickListener(v -> attemptSignup());
@@ -116,17 +115,10 @@ public class SignupActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Inicializa el ViewModel de Signup utilizando ViewModelProvider.
-     */
     private void setupViewModel() {
         signupViewModel = new ViewModelProvider(this).get(SignupViewModel.class);
     }
 
-    /**
-     * Se suscribe a los LiveData del SignupViewModel para reaccionar
-     * a cambios en el registro (loading, éxito, error).
-     */
     private void observeViewModel() {
         if (signupViewModel == null) return;
 
@@ -136,7 +128,6 @@ public class SignupActivity extends AppCompatActivity {
             public void onChanged(Boolean isLoading) {
                 if (isLoading == null) return;
 
-                // Deshabilitar / habilitar botones según el estado
                 if (btnCreateAccount != null) {
                     btnCreateAccount.setEnabled(!isLoading);
                     btnCreateAccount.setText(isLoading ? "Creando cuenta..." : "Crear cuenta");
@@ -148,7 +139,7 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
 
-        // Observa si el registro fue exitoso
+        // Observa si el registro fue exitoso (Auth + Firestore)
         signupViewModel.getSignupSuccess().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean success) {
@@ -186,7 +177,8 @@ public class SignupActivity extends AppCompatActivity {
 
     /**
      * Valida los campos del formulario y, si son válidos,
-     * llama al SignupViewModel para registrar el usuario en Firebase Auth.
+     * llama al SignupViewModel para registrar el usuario en
+     * Firebase Auth y guardar su perfil en Firestore.
      */
     private void attemptSignup() {
         String name = etName != null ? etName.getText().toString().trim() : "";
@@ -242,15 +234,12 @@ public class SignupActivity extends AppCompatActivity {
             return;
         }
 
-        // Llamada al ViewModel: el resultado se manejará en los observers
-        signupViewModel.signup(email, password);
+        // Llamada al ViewModel: ahora pasa name, email y password
+        signupViewModel.signup(name, email, password);
     }
 
     /**
      * Navega a la pantalla principal (MainActivity) tras un registro exitoso.
-     *
-     * @param name  Nombre del usuario registrado.
-     * @param email Email del usuario registrado.
      */
     private void navigateAfterSignup(String name, String email) {
         Intent intent = new Intent(this, MainActivity.class);
