@@ -39,6 +39,7 @@ import java.util.Locale;
  *     de mostrar el carrito.
  *   - Usa MenuDesplegableHelper para manejar el menú deslizante
  *     (top sheet) del navbar con opciones:
+ *       · Inicio (Catálogo)
  *       · Mis datos
  *       · Mi carrito
  *       · Cerrar sesión
@@ -102,12 +103,10 @@ public class CartActivity extends AppCompatActivity {
         View overlay = findViewById(R.id.overlay);
         View topSheet = findViewById(R.id.topSheet);
 
+        View btnInicio = findViewById(R.id.btnInicio);
         View btnMisDatos = findViewById(R.id.btnMisDatos);
         View btnMiCarrito = findViewById(R.id.btnMiCarrito);
         View btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
-
-        // En carrito tampoco hay botón "Inicio" propio → pasamos null
-        View btnInicio = null;
 
         menuHelper = new MenuDesplegableHelper(
                 this,
@@ -127,8 +126,14 @@ public class CartActivity extends AppCompatActivity {
 
         MaterialButton btnBack = findViewById(R.id.btnBackToCatalog);
         if (btnBack != null) {
-            // Volver a Catálogo (cierra la Activity actual)
-            btnBack.setOnClickListener(v -> finish());
+            // Volver SIEMPRE a la pantalla de Catálogo, no solo "atrás"
+            btnBack.setOnClickListener(v -> {
+                Intent intent = new Intent(CartActivity.this, CatalogActivity.class);
+                // Opcional: limpiar pila si Catalog ya estaba abajo
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+            });
         }
 
         MaterialButton btnPlaceAll = findViewById(R.id.btnPlaceAllOrders);
