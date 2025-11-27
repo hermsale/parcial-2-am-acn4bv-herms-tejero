@@ -12,11 +12,10 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.lamontana.R;
-import com.example.lamontana.viewmodel.SignupViewModel;
-
 import com.example.lamontana.data.user.UserStore;
-
-// para firebase
+import com.example.lamontana.viewmodel.SignupViewModel;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 /* -----------------------------------------------------------------------------
   Archivo: SignupActivity.java
@@ -25,6 +24,9 @@ import com.example.lamontana.data.user.UserStore;
     - Validar los datos ingresados por el usuario para crear una nueva cuenta.
     - Delegar el registro real a SignupViewModel (Firebase Auth + Firestore).
     - Navegar nuevamente al Login o a la pantalla principal si el registro es válido.
+    - Tras un registro exitoso, cargar en UserStore los datos básicos del usuario
+      recién creado, usando el UID real obtenido desde FirebaseAuth, para que
+      otras pantallas (por ejemplo ProfileActivity) puedan sincronizar con Firestore.
 
   Alcance:
     - Forma parte del flujo de autenticación inicial de la app.
@@ -52,7 +54,8 @@ import com.example.lamontana.data.user.UserStore;
         * Valida los campos del formulario y llama a
           signupViewModel.signup(name, email, password).
     - navigateAfterSignup(String name, String email)
-        * Navega a la pantalla principal tras un registro exitoso.
+        * Navega a la pantalla principal tras un registro exitoso y
+          actualiza UserStore con el UID real del usuario autenticado.
 
   Notas:
     - La lógica de autenticación y guardado de perfil se encuentra en SignupViewModel,
@@ -243,27 +246,27 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     /**
-     * Navega a la pantalla principal (MainActivity) tras un registro exitoso.
+     * Navega a la pantalla principal (CatalogActivity) tras un registro exitoso.
+     * Además, carga en UserStore el UID real del usuario autenticado para que
+     * otras pantallas (por ejemplo Mis Datos) puedan usarlo al escribir en Firestore.
      */
     private void navigateAfterSignup(String name, String email) {
-//        Intent intent = new Intent(this, MainActivity.class);
-//        intent.putExtra("name", name);
-//        intent.putExtra("email", email);
-//        startActivity(intent);
-//        finish(); // Cierra actividad de registro
+        // Obtener UID del usuario que acaba de registrarse desde Firebase Auth
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String uid = "";
 
-        // Obtener UID del usuario que acaba de registrarse - esto cuando firebase este funcional
-//        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        if (currentUser != null) {
+            uid = currentUser.getUid();
+        }
 
-        String uid = "local-temp-user";  // UID temporal para desarrollo
-
-        // Guardar datos básicos en UserStore
+        // Guardar datos básicos en UserStore usando el UID real
         UserStore.get().setBasicData(uid, name, email);
 
-        // Navegar a MainActivity
+        // Navegar a CatalogActivity
         Intent intent = new Intent(this, CatalogActivity.class);
         startActivity(intent);
 
-        finish(); // Cierra SignupActivity
+        // Cierra SignupActivity para no volver con back
+        finish();
     }
 }

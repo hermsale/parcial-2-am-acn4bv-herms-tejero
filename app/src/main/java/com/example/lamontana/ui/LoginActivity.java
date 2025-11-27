@@ -12,7 +12,10 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.lamontana.R;
+import com.example.lamontana.data.user.UserStore;
 import com.example.lamontana.viewmodel.LoginViewModel;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 /* -----------------------------------------------------------------------------
   Archivo: LoginActivity.java
@@ -21,13 +24,16 @@ import com.example.lamontana.viewmodel.LoginViewModel;
     - Validar datos básicos ingresados por el usuario (email y contraseña).
     - Delegar el proceso de login real a LoginViewModel (Firebase Auth).
     - Navegar a la pantalla principal de catálogo si el login es válido.
+    - Al completarse el login exitoso, cargar en UserStore los datos básicos
+      del usuario autenticado (uid + email) para que otras pantallas
+      (por ejemplo ProfileActivity) puedan sincronizar con Firestore.
 
   Alcance:
     - Es la pantalla de entrada de la aplicación (launcher).
     - Forma parte del flujo de autenticación usando Firebase Auth.
     - Observa LiveData del LoginViewModel para:
         * loading: habilitar/deshabilitar botones.
-        * loginSuccess: navegar al catálogo.
+        * loginSuccess: navegar al catálogo y poblar UserStore.
         * errorMessage: mostrar mensajes de error.
 
   Lista de métodos públicos:
@@ -47,7 +53,7 @@ import com.example.lamontana.viewmodel.LoginViewModel;
         * Valida los campos de email y contraseña.
         * Si son válidos, llama a loginViewModel.login(email, password).
     - navigateToMain(String email)
-        * Navega a la pantalla principal (MainActivity) tras login exitoso.
+        * Navega a la pantalla principal (CatalogActivity) tras login exitoso.
 
 ----------------------------------------------------------------------------- */
 public class LoginActivity extends AppCompatActivity {
@@ -150,14 +156,32 @@ public class LoginActivity extends AppCompatActivity {
             public void onChanged(Boolean success) {
                 if (success != null && success) {
                     // Obtenemos el email actual del campo para mostrarlo o enviarlo
-                    String email = etEmail != null
+                    String emailFromField = etEmail != null
                             ? etEmail.getText().toString().trim()
                             : "";
+
+                    // ------------------------------------------------------------------
+                    // NUEVO: Poblar UserStore con datos básicos del usuario autenticado
+                    // ------------------------------------------------------------------
+                    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                    String uid = "";
+                    String emailFinal = emailFromField;
+
+                    if (currentUser != null) {
+                        uid = currentUser.getUid();
+                        if (currentUser.getEmail() != null && !currentUser.getEmail().trim().isEmpty()) {
+                            emailFinal = currentUser.getEmail().trim();
+                        }
+                    }
+
+                    // Por ahora no tenemos el nombre desde Auth, lo dejamos vacío
+                    // y el usuario puede completarlo en la vista Profile.
+                    UserStore.get().setBasicData(uid, "", emailFinal);
 
                     Toast.makeText(LoginActivity.this,
                             "Login exitoso", Toast.LENGTH_SHORT).show();
 
-                    navigateToMain(email);
+                    navigateToMain(emailFinal);
                 }
             }
         });
