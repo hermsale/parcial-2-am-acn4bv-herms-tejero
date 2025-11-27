@@ -1,7 +1,6 @@
 package com.example.lamontana.ui;
 
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -13,12 +12,57 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.lamontana.R;
 import com.example.lamontana.data.user.UserStore;
+import com.example.lamontana.ui.navbar.MenuDesplegableHelper;
+
+/*
+ * ============================================================
+ * Archivo: ProfileActivity.java
+ * Paquete: com.example.lamontana.ui
+ * ------------------------------------------------------------
+ * ¿De qué se encarga?
+ *   - Muestra y permite editar los datos básicos del usuario
+ *     (nombre, apellido, email, teléfono, dirección).
+ *   - Carga y guarda esos datos en UserStore (capa de datos
+ *     local de usuario).
+ *   - Muestra el navbar con menú desplegable (top sheet) para:
+ *       · Ir al inicio (Catálogo)
+ *       · Ir a Mis datos (esta misma pantalla)
+ *       · Ir al carrito
+ *       · Cerrar sesión
+ *     usando el helper reutilizable MenuDesplegableHelper.
+ *
+ * Clases usadas:
+ *   - UserStore: almacena datos básicos del usuario.
+ *   - MenuDesplegableHelper: maneja el menú top-sheet del navbar.
+ *   - AlertDialog: para el mensaje de "Cambiar contraseña".
+ *
+ * Métodos presentes:
+ *   - onCreate(Bundle):
+ *       * Configura la UI, inicializa vistas, menú (via helper)
+ *         y listeners. Carga datos del usuario.
+ *   - initViews():
+ *       * Enlaza las vistas de los campos de perfil y vistas
+ *         del navbar (overlay, topSheet ya no se manejan aquí).
+ *   - setupListeners():
+ *       * Configura botones de "Guardar" y "Cambiar contraseña".
+ *   - saveProfile():
+ *       * Actualiza datos opcionales en UserStore (apellido,
+ *         teléfono, dirección).
+ *   - changePasswordDialog():
+ *       * Muestra un diálogo informativo (placeholder).
+ *   - loadUserData():
+ *       * Carga los datos desde UserStore en los EditText.
+ *   - bindUserData():
+ *       * Versión interna para vincular datos a las vistas.
+ * ============================================================
+ */
 
 public class ProfileActivity extends AppCompatActivity {
 
     private EditText etNombre, etApellido, etEmail, etTelefono, etDireccion;
-    private View overlay, topSheet;
-    private boolean isMenuOpen = false;
+
+    // Helper para el menú desplegable del navbar
+    private MenuDesplegableHelper menuHelper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -26,10 +70,31 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
 
         initViews();
-        setupMenu();
+
+        // ---------- Configurar menú desplegable con helper ----------
+        ImageView btnMenu = findViewById(R.id.btnMenu);       // viene del include_navbar.xml
+        View overlay = findViewById(R.id.overlay);
+        View topSheet = findViewById(R.id.topSheet);
+
+        View btnInicio = findViewById(R.id.btnInicio);
+        View btnMisDatos = findViewById(R.id.btnMisDatos);
+        View btnMiCarrito = findViewById(R.id.btnMiCarrito);
+        View btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
+
+        menuHelper = new MenuDesplegableHelper(
+                this,
+                btnMenu,
+                overlay,
+                topSheet,
+                btnInicio,
+                btnMisDatos,
+                btnMiCarrito,
+                btnCerrarSesion
+        );
+        menuHelper.initMenu();
+
         setupListeners();
         loadUserData();
-
     }
 
     private void initViews() {
@@ -38,59 +103,34 @@ public class ProfileActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.etEmail);
         etTelefono = findViewById(R.id.etTelefono);
         etDireccion = findViewById(R.id.etDireccion);
-
-        overlay = findViewById(R.id.overlay);
-        topSheet = findViewById(R.id.topSheet);
     }
 
     private void bindUserData() {
         UserStore u = UserStore.get();
 
-        etNombre.setText(u.nombre);
-        etApellido.setText(u.apellido);
-        etEmail.setText(u.email);
-        etTelefono.setText(u.telefono);
-        etDireccion.setText(u.direccion);
+        if (etNombre != null)   etNombre.setText(u.nombre);
+        if (etApellido != null) etApellido.setText(u.apellido);
+        if (etEmail != null)    etEmail.setText(u.email);
+        if (etTelefono != null) etTelefono.setText(u.telefono);
+        if (etDireccion != null)etDireccion.setText(u.direccion);
     }
 
     private void setupListeners() {
+        View btnSave = findViewById(R.id.btnSave);
+        if (btnSave != null) {
+            btnSave.setOnClickListener(v -> saveProfile());
+        }
 
-        findViewById(R.id.btnSave).setOnClickListener(v -> saveProfile());
-        findViewById(R.id.btnChangePassword).setOnClickListener(v -> changePasswordDialog());
-    }
-
-    private void setupMenu() {
-        ImageView btnMenu = findViewById(R.id.btnMenu); // viene del include_navbar.xml
-
-        btnMenu.setOnClickListener(v -> toggleMenu());
-        overlay.setOnClickListener(v -> closeMenu());
-
-        findViewById(R.id.btnInicio).setOnClickListener(v -> {
-            closeMenu();
-            startActivity(new Intent(this, CatalogActivity.class));
-            finish();
-        });
-
-        // listeners del menú del top sheet
-        findViewById(R.id.btnMisDatos).setOnClickListener(v -> closeMenu());
-
-        findViewById(R.id.btnMiCarrito).setOnClickListener(v -> {
-            closeMenu();
-            startActivity(new Intent(this, CartActivity.class));
-        });
-
-        findViewById(R.id.btnCerrarSesion).setOnClickListener(v -> {
-            closeMenu();
-            UserStore.get().clear();
-            startActivity(new Intent(this, LoginActivity.class));
-            finish();
-        });
+        View btnChangePassword = findViewById(R.id.btnChangePassword);
+        if (btnChangePassword != null) {
+            btnChangePassword.setOnClickListener(v -> changePasswordDialog());
+        }
     }
 
     private void saveProfile() {
-        String apellido = etApellido.getText().toString().trim();
-        String telefono = etTelefono.getText().toString().trim();
-        String direccion = etDireccion.getText().toString().trim();
+        String apellido = etApellido != null ? etApellido.getText().toString().trim() : "";
+        String telefono = etTelefono != null ? etTelefono.getText().toString().trim() : "";
+        String direccion = etDireccion != null ? etDireccion.getText().toString().trim() : "";
 
         UserStore.get().setOptionalData(apellido, telefono, direccion);
 
@@ -105,40 +145,7 @@ public class ProfileActivity extends AppCompatActivity {
                 .show();
     }
 
-    // ========== MENÚ TOP-SHEET ==========
-
-    private void toggleMenu() {
-        if (isMenuOpen) closeMenu();
-        else openMenu();
-    }
-
-    private void openMenu() {
-        topSheet.setVisibility(View.VISIBLE);
-        topSheet.startAnimation(
-                android.view.animation.AnimationUtils.loadAnimation(this, R.anim.top_sheet_down)
-        );
-        overlay.setVisibility(View.VISIBLE);
-        isMenuOpen = true;
-    }
-
-    private void closeMenu() {
-        topSheet.startAnimation(
-                android.view.animation.AnimationUtils.loadAnimation(this, R.anim.top_sheet_up)
-        );
-        overlay.setVisibility(View.GONE);
-        topSheet.setVisibility(View.GONE);
-        isMenuOpen = false;
-    }
-
     private void loadUserData() {
-        // Obtener datos del store
-        UserStore u = UserStore.get();
-
-        // Cargar los campos
-        if (etNombre != null) etNombre.setText(u.nombre);
-        if (etApellido != null) etApellido.setText(u.apellido);
-        if (etEmail != null) etEmail.setText(u.email);
-        if (etTelefono != null) etTelefono.setText(u.telefono);
-        if (etDireccion != null) etDireccion.setText(u.direccion);
+        bindUserData();
     }
 }

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -19,6 +18,7 @@ import com.example.lamontana.R;
 import com.example.lamontana.data.CartStore;
 import com.example.lamontana.model.Category;
 import com.example.lamontana.model.Product;
+import com.example.lamontana.ui.navbar.MenuDesplegableHelper;
 import com.example.lamontana.viewmodel.CatalogViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,8 +43,10 @@ import java.util.Locale;
  *    carrito (cantidad y total).
  *  - Verifica que el usuario esté logueado con Firebase Auth
  *    antes de mostrar el catálogo.
- *  - Controla el menú deslizante del navbar (top sheet) con
- *    opciones:
+ *  - Controla el menú deslizante del navbar (top sheet) a
+ *    través del helper reutilizable:
+ *      · MenuDesplegableHelper (en ui.navbar)
+ *    con opciones:
  *      · Mis datos
  *      · Mi carrito
  *      · Cerrar sesión
@@ -59,12 +61,16 @@ import java.util.Locale;
  *  - CartStore / CartActivity:
  *      * Reciben los Product seleccionados y gestionan el
  *        estado del carrito.
+ *  - MenuDesplegableHelper:
+ *      * Encapsula la lógica del menú top-sheet para reducir
+ *        código duplicado en las Activities.
  *
  * Métodos presentes:
  *  - onCreate(Bundle):
  *      * Verifica login (ensureUserLoggedIn()).
  *      * Infla el layout, inicializa vistas y listeners.
- *      * Configura el menú deslizante del navbar.
+ *      * Configura el menú deslizante del navbar mediante
+ *        MenuDesplegableHelper.
  *      * Conecta el CatalogViewModel y observa los productos.
  *  - ensureUserLoggedIn():
  *      * Consulta FirebaseAuth para ver si hay usuario
@@ -79,9 +85,6 @@ import java.util.Locale;
  *  - updateCartUi():
  *      * Actualiza el panel superior del carrito (cantidad y
  *        total).
- *  - toggleMenu(), openMenu(), closeMenu():
- *      * Controlan la apertura/cierre del menú deslizante del
- *        navbar.
  *  - onResume():
  *      * Refresca el estado del carrito al volver a esta
  *        pantalla.
@@ -98,10 +101,8 @@ public class CatalogActivity extends AppCompatActivity {
     private MaterialButton btnAll, btnPrint, btnBinding;
     private MaterialButton btnClearCart, btnViewCart;
 
-    // ----- Vistas para el menú deslizante (navbar) -----
-    private View overlay;
-    private View topSheet;
-    private boolean isMenuOpen = false;
+    // Helper para el menú desplegable del navbar
+    private MenuDesplegableHelper menuHelper;
 
     // ---------- Soporte ----------
     /** Lista completa de productos cargados desde Firestore vía ViewModel. */
@@ -126,49 +127,29 @@ public class CatalogActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_catalog);
 
-        // ---------- Navbar / Menú deslizante ----------
+        // ---------- Navbar / Menú deslizante con helper ----------
         ImageView btnMenu = findViewById(R.id.btnMenu);
-        overlay = findViewById(R.id.overlay);
-        topSheet = findViewById(R.id.topSheet);
+        View overlay = findViewById(R.id.overlay);
+        View topSheet = findViewById(R.id.topSheet);
 
-        if (btnMenu != null) {
-            btnMenu.setOnClickListener(v -> toggleMenu());
-        }
-
-        if (overlay != null) {
-            overlay.setOnClickListener(v -> closeMenu());
-        }
-
-        // Botones dentro del top sheet (menú)
         View btnMisDatos = findViewById(R.id.btnMisDatos);
         View btnMiCarrito = findViewById(R.id.btnMiCarrito);
         View btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
 
-        if (btnMisDatos != null) {
-            btnMisDatos.setOnClickListener(v -> {
-                closeMenu();
-                startActivity(new Intent(CatalogActivity.this, ProfileActivity.class));
-            });
-        }
+        // En catálogo NO hay botón "Inicio" porque ya es la pantalla principal → pasamos null
+        View btnInicio = null;
 
-        if (btnMiCarrito != null) {
-            btnMiCarrito.setOnClickListener(v -> {
-                closeMenu();
-                startActivity(new Intent(CatalogActivity.this, CartActivity.class));
-            });
-        }
-
-        if (btnCerrarSesion != null) {
-            btnCerrarSesion.setOnClickListener(v -> {
-                closeMenu();
-                // Cerrar sesión en Firebase y volver al login
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(CatalogActivity.this, LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                finish();
-            });
-        }
+        menuHelper = new MenuDesplegableHelper(
+                this,
+                btnMenu,
+                overlay,
+                topSheet,
+                btnInicio,
+                btnMisDatos,
+                btnMiCarrito,
+                btnCerrarSesion
+        );
+        menuHelper.initMenu();
 
         // ---------- Bind de vistas del catálogo ----------
         inflater = LayoutInflater.from(this);
@@ -201,9 +182,6 @@ public class CatalogActivity extends AppCompatActivity {
                 Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
             }
         });
-
-        // Si quisieras observar un estado de carga, aquí podrías mostrar/ocultar un spinner.
-        // catalogViewModel.getLoading().observe(this, isLoading -> { ... });
 
         // Disparar la carga de productos sólo si es necesario
         catalogViewModel.loadProductsIfNeeded();
@@ -332,38 +310,6 @@ public class CatalogActivity extends AppCompatActivity {
         }
     }
 
-    // ----- Control del menú deslizante (top sheet / navbar) -----
-
-    private void toggleMenu() {
-        if (isMenuOpen) {
-            closeMenu();
-        } else {
-            openMenu();
-        }
-    }
-
-    private void openMenu() {
-        if (topSheet == null || overlay == null) return;
-
-        topSheet.setVisibility(View.VISIBLE);
-        topSheet.startAnimation(
-                AnimationUtils.loadAnimation(this, R.anim.top_sheet_down)
-        );
-        overlay.setVisibility(View.VISIBLE);
-        isMenuOpen = true;
-    }
-
-    private void closeMenu() {
-        if (topSheet == null || overlay == null) return;
-
-        topSheet.startAnimation(
-                AnimationUtils.loadAnimation(this, R.anim.top_sheet_up)
-        );
-        overlay.setVisibility(View.GONE);
-        topSheet.setVisibility(View.GONE);
-        isMenuOpen = false;
-    }
-
     // Esto soluciona que, al volver desde el carrito, se actualice el resumen
     @Override
     protected void onResume() {
@@ -371,3 +317,4 @@ public class CatalogActivity extends AppCompatActivity {
         updateCartUi();
     }
 }
+

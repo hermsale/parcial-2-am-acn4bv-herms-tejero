@@ -12,10 +12,12 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.lamontana.R;
 import com.example.lamontana.data.CartStore;
 import com.example.lamontana.model.CartItem;
 import com.example.lamontana.model.Product;
+import com.example.lamontana.ui.navbar.MenuDesplegableHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,7 +29,7 @@ import java.util.Locale;
 /*
  * ============================================================
  * Archivo: CartActivity.java
- * Paquete: com.example.lamontana
+ * Paquete: com.example.lamontana.ui
  * ------------------------------------------------------------
  * ¿De qué se encarga?
  *   - Controla la pantalla "Carrito". Muestra los ítems agregados,
@@ -35,32 +37,38 @@ import java.util.Locale;
  *     y realizar todos los pedidos (simulado).
  *   - Verifica que el usuario esté logueado con Firebase Auth antes
  *     de mostrar el carrito.
- *   - Controla el menú deslizante (top sheet) del navbar con opciones:
+ *   - Usa MenuDesplegableHelper para manejar el menú deslizante
+ *     (top sheet) del navbar con opciones:
  *       · Mis datos
  *       · Mi carrito
  *       · Cerrar sesión
+ *   - Carga las imágenes de los productos desde la URL remota
+ *     (Product.imageUrl, proveniente de Firestore/Storage) usando Glide,
+ *     con fallback al recurso drawable local (imageRes).
  *
  * Clases usadas:
  *   - CartStore (data): estado del carrito en memoria.
  *   - CartItem/Product (model): datos de dominio.
  *   - FirebaseAuth/FirebaseUser: autenticación de usuario.
+ *   - Glide: carga de imágenes desde URL.
+ *   - MenuDesplegableHelper: lógica común del menú top-sheet.
  *
- * Métodos principales:
+ * Métodos presentes:
  *   - onCreate():
- *       * Verifica que el usuario esté logueado (ensureUserLoggedIn()).
- *       * Configura UI, menú del navbar y dibuja el carrito (renderCart()).
+ *       * Verifica usuario logueado (ensureUserLoggedIn()).
+ *       * Configura UI, menú del navbar (via helper) y dibuja el carrito.
  *   - ensureUserLoggedIn():
  *       * Si no hay usuario -> LoginActivity y finish().
  *   - renderCart():
- *       * Infla filas (item_cart_detail) por cada CartItem.
+ *       * Infla filas (item_cart_detail) por cada CartItem y renderiza datos.
  *   - rebindRowAfterChange(View, Product):
- *       * Refresca cantidad/total de una fila tras un cambio.
+ *       * Refresca cantidad/total de una fila tras un cambio (+/-).
  *   - updateGrandTotal():
  *       * Recalcula total global y habilita/deshabilita “Realizar todos”.
  *   - onPlaceAllOrders():
  *       * Confirma y limpia carrito (simulado).
- *   - toggleMenu(), openMenu(), closeMenu():
- *       * Controlan el top sheet del navbar.
+ *   - findCartItemByProductName(String):
+ *       * Busca el CartItem asociado a un Product por nombre.
  * ============================================================
  */
 public class CartActivity extends AppCompatActivity {
@@ -71,10 +79,8 @@ public class CartActivity extends AppCompatActivity {
     // Texto de total general ($)
     private TextView tvCartGrandTotal;
 
-    // Vistas para el menú deslizante (navbar)
-    private View overlay;
-    private View topSheet;
-    private boolean isMenuOpen = false;
+    // Helper para el menú deslizante del navbar
+    private MenuDesplegableHelper menuHelper;
 
     // Formateador de moneda en ARS
     private final NumberFormat ars =
@@ -91,48 +97,29 @@ public class CartActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_cart);
 
-        // ---------- Navbar / Menú deslizante ----------
+        // ---------- Navbar / Menú deslizante mediante helper ----------
         ImageView btnMenu = findViewById(R.id.btnMenu);
-        overlay = findViewById(R.id.overlay);
-        topSheet = findViewById(R.id.topSheet);
+        View overlay = findViewById(R.id.overlay);
+        View topSheet = findViewById(R.id.topSheet);
 
-        if (btnMenu != null) {
-            btnMenu.setOnClickListener(v -> toggleMenu());
-        }
-        if (overlay != null) {
-            overlay.setOnClickListener(v -> closeMenu());
-        }
-
-        // Botones dentro del top sheet
         View btnMisDatos = findViewById(R.id.btnMisDatos);
         View btnMiCarrito = findViewById(R.id.btnMiCarrito);
         View btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
 
-        if (btnMisDatos != null) {
-            btnMisDatos.setOnClickListener(v -> {
-                closeMenu();
-                startActivity(new Intent(CartActivity.this, ProfileActivity.class));
-            });
-        }
+        // En carrito tampoco hay botón "Inicio" propio → pasamos null
+        View btnInicio = null;
 
-        if (btnMiCarrito != null) {
-            btnMiCarrito.setOnClickListener(v -> {
-                closeMenu();
-                // Ya estás en Carrito; si querés simplemente refrescar:
-                renderCart();
-            });
-        }
-
-        if (btnCerrarSesion != null) {
-            btnCerrarSesion.setOnClickListener(v -> {
-                closeMenu();
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(CartActivity.this, LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                finish();
-            });
-        }
+        menuHelper = new MenuDesplegableHelper(
+                this,
+                btnMenu,
+                overlay,
+                topSheet,
+                btnInicio,
+                btnMisDatos,
+                btnMiCarrito,
+                btnCerrarSesion
+        );
+        menuHelper.initMenu();
 
         // ---- Referencias de UI del carrito ----
         llCartListContainer = findViewById(R.id.llCartListContainer);
@@ -170,6 +157,7 @@ public class CartActivity extends AppCompatActivity {
 
     /**
      * Dibuja toda la lista del carrito.
+     * Carga las imágenes desde URL usando Glide.
      */
     private void renderCart() {
         if (llCartListContainer == null) return;
@@ -195,7 +183,23 @@ public class CartActivity extends AppCompatActivity {
             Product p = ci.product;
             if (p == null) continue;
 
-            if (iv != null) iv.setImageResource(p.imageRes);
+            // ==== Carga de imagen desde imageUrl con fallback a imageRes ====
+            if (iv != null) {
+                if (p.imageUrl != null && !p.imageUrl.trim().isEmpty()) {
+                    // Usamos Glide para cargar la URL remota (Firebase Storage)
+                    Glide.with(this)
+                            .load(p.imageUrl)
+                            .into(iv);
+                } else if (p.imageRes != 0) {
+                    // Fallback al recurso drawable local existente
+                    iv.setImageResource(p.imageRes);
+                } else {
+                    // Último fallback: un icono genérico del proyecto
+                    iv.setImageResource(R.drawable.ic_launcher_foreground);
+                }
+            }
+            // ===============================================================
+
             if (tvName != null) tvName.setText(p.name);
             if (tvDesc != null) tvDesc.setText(p.desc);
             if (tvUnitPrice != null) {
@@ -329,43 +333,5 @@ public class CartActivity extends AppCompatActivity {
             }
         }
         return null;
-    }
-
-    // ----- Control del menú deslizante (top sheet / navbar) -----
-
-    private void toggleMenu() {
-        if (isMenuOpen) {
-            closeMenu();
-        } else {
-            openMenu();
-        }
-    }
-
-    private void openMenu() {
-        if (topSheet == null || overlay == null) return;
-
-        topSheet.setVisibility(View.VISIBLE);
-        topSheet.startAnimation(
-                android.view.animation.AnimationUtils.loadAnimation(
-                        this,
-                        R.anim.top_sheet_down
-                )
-        );
-        overlay.setVisibility(View.VISIBLE);
-        isMenuOpen = true;
-    }
-
-    private void closeMenu() {
-        if (topSheet == null || overlay == null) return;
-
-        topSheet.startAnimation(
-                android.view.animation.AnimationUtils.loadAnimation(
-                        this,
-                        R.anim.top_sheet_up
-                )
-        );
-        overlay.setVisibility(View.GONE);
-        topSheet.setVisibility(View.GONE);
-        isMenuOpen = false;
     }
 }
