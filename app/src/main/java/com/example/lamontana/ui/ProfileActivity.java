@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.lamontana.R;
+import com.example.lamontana.data.user.UserRepository;
 import com.example.lamontana.data.user.UserStore;
 import com.example.lamontana.ui.navbar.MenuDesplegableHelper;
 
@@ -20,36 +21,49 @@ import com.example.lamontana.ui.navbar.MenuDesplegableHelper;
  * Paquete: com.example.lamontana.ui
  * ------------------------------------------------------------
  * ¿De qué se encarga?
- *   - Muestra y permite editar los datos básicos del usuario
- *     (nombre, apellido, email, teléfono, dirección).
- *   - Carga y guarda esos datos en UserStore (capa de datos
- *     local de usuario).
+ *   - Muestra y permite editar los datos básicos del usuario:
+ *       · nombre
+ *       · apellido
+ *       · email (normalmente solo lectura)
+ *       · teléfono
+ *       · dirección
+ *   - Carga y guarda esos datos en UserStore (estado en memoria).
+ *   - Sincroniza los cambios con Firestore en la colección
+ *     "usuarios", actualizando el documento del usuario actual
+ *     a través de UserRepository.updateUserProfile(...).
  *   - Muestra el navbar con menú desplegable (top sheet) para:
  *       · Ir al inicio (Catálogo)
- *       · Ir a Mis datos (esta misma pantalla)
+ *       · Ir a Mis datos
  *       · Ir al carrito
  *       · Cerrar sesión
  *     usando el helper reutilizable MenuDesplegableHelper.
  *
  * Clases usadas:
- *   - UserStore: almacena datos básicos del usuario.
- *   - MenuDesplegableHelper: maneja el menú top-sheet del navbar.
- *   - AlertDialog: para el mensaje de "Cambiar contraseña".
+ *   - UserStore:
+ *       * Almacena datos básicos del usuario en memoria.
+ *   - UserRepository:
+ *       * Encapsula operaciones sobre la colección "usuarios"
+ *         en Firestore (actualizar perfil).
+ *   - MenuDesplegableHelper:
+ *       * Maneja el menú top-sheet del navbar (animaciones y
+ *         navegación).
+ *   - AlertDialog:
+ *       * Para el mensaje de "Cambiar contraseña" (placeholder).
  *
  * Métodos presentes:
  *   - onCreate(Bundle):
- *       * Configura la UI, inicializa vistas, menú (via helper)
- *         y listeners. Carga datos del usuario.
+ *       * Configura la UI, inicializa vistas, menú (helper),
+ *         listeners y carga datos del usuario.
  *   - initViews():
- *       * Enlaza las vistas de los campos de perfil y vistas
- *         del navbar (overlay, topSheet ya no se manejan aquí).
+ *       * Enlaza las vistas de los campos de perfil.
  *   - setupListeners():
  *       * Configura botones de "Guardar" y "Cambiar contraseña".
  *   - saveProfile():
- *       * Actualiza datos opcionales en UserStore (apellido,
- *         teléfono, dirección).
+ *       * Lee campos del formulario.
+ *       * Actualiza UserStore en memoria.
+ *       * Intenta sincronizar con Firestore usando UserRepository.
  *   - changePasswordDialog():
- *       * Muestra un diálogo informativo (placeholder).
+ *       * Muestra un diálogo informativo (sin lógica real aún).
  *   - loadUserData():
  *       * Carga los datos desde UserStore en los EditText.
  *   - bindUserData():
@@ -127,14 +141,58 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Guarda los datos editados:
+     *  1) Actualiza UserStore en memoria.
+     *  2) Si tenemos un UID válido, actualiza también Firestore
+     *     en la colección "usuarios" (documento usuarios/{uid}).
+     */
     private void saveProfile() {
+        // 1) Leer campos desde la UI (con null-checks defensivos)
+        String nombre = etNombre != null ? etNombre.getText().toString().trim() : "";
         String apellido = etApellido != null ? etApellido.getText().toString().trim() : "";
         String telefono = etTelefono != null ? etTelefono.getText().toString().trim() : "";
         String direccion = etDireccion != null ? etDireccion.getText().toString().trim() : "";
 
-        UserStore.get().setOptionalData(apellido, telefono, direccion);
+        // 2) Actualizar UserStore en memoria
+        UserStore store = UserStore.get();
+        // nombre forma parte de los datos "básicos"
+        store.setBasicData(store.uid, nombre.isEmpty() ? store.nombre : nombre, store.email);
+        // los opcionales se actualizan siempre
+        store.setOptionalData(apellido, telefono, direccion);
 
-        Toast.makeText(this, "Datos guardados correctamente", Toast.LENGTH_SHORT).show();
+        // 3) Obtener UID para Firestore
+        String uid = store.uid;
+
+        if (uid == null || uid.trim().isEmpty()) {
+            // No tenemos UID válido: no podemos sincronizar con Firestore
+            Toast.makeText(
+                    this,
+                    "Datos guardados localmente, pero no se pudo sincronizar con Firestore (UID vacío).",
+                    Toast.LENGTH_LONG
+            ).show();
+            return;
+        }
+
+        // 4) Actualizar Firestore a través del repositorio
+        UserRepository.getInstance()
+                .updateUserProfile(
+                        uid,
+                        nombre.isEmpty() ? null : nombre,
+                        apellido.isEmpty() ? null : apellido,
+                        telefono.isEmpty() ? null : telefono,
+                        direccion.isEmpty() ? null : direccion
+                )
+                .addOnSuccessListener(unused -> Toast.makeText(
+                        ProfileActivity.this,
+                        "Datos guardados correctamente",
+                        Toast.LENGTH_SHORT
+                ).show())
+                .addOnFailureListener(e -> Toast.makeText(
+                        ProfileActivity.this,
+                        "Error al guardar datos en Firestore: " + e.getMessage(),
+                        Toast.LENGTH_LONG
+                ).show());
     }
 
     private void changePasswordDialog() {
