@@ -3,6 +3,7 @@ package com.example.lamontana.ui;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;                    // <-- agregado
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -129,7 +130,6 @@ public class CartActivity extends AppCompatActivity {
             // Volver SIEMPRE a la pantalla de Catálogo, no solo "atrás"
             btnBack.setOnClickListener(v -> {
                 Intent intent = new Intent(CartActivity.this, CatalogActivity.class);
-                // Opcional: limpiar pila si Catalog ya estaba abajo
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
@@ -188,22 +188,28 @@ public class CartActivity extends AppCompatActivity {
             Product p = ci.product;
             if (p == null) continue;
 
-            // ==== Carga de imagen desde imageUrl con fallback a imageRes ====
+            // ==== BLOQUE Glide: Carga de imagen desde imageUrl con fallback a imageRes ====
             if (iv != null) {
-                if (p.imageUrl != null && !p.imageUrl.trim().isEmpty()) {
-                    // Usamos Glide para cargar la URL remota (Firebase Storage)
-                    Glide.with(this)
+                int fallbackRes = (p.imageRes != 0)
+                        ? p.imageRes
+                        : R.drawable.sample_print_bw;
+
+                if (!TextUtils.isEmpty(p.imageUrl)) {
+                    // Imagen remota desde Firebase Storage
+                    Glide.with(iv.getContext())
                             .load(p.imageUrl)
+                            .placeholder(fallbackRes)
+                            .error(fallbackRes)
                             .into(iv);
                 } else if (p.imageRes != 0) {
-                    // Fallback al recurso drawable local existente
+                    // Fallback: drawable local ya definido en el Product
                     iv.setImageResource(p.imageRes);
                 } else {
-                    // Último fallback: un icono genérico del proyecto
+                    // Último recurso: icono genérico
                     iv.setImageResource(R.drawable.ic_launcher_foreground);
                 }
             }
-            // ===============================================================
+            // ============================================================================
 
             if (tvName != null) tvName.setText(p.name);
             if (tvDesc != null) tvDesc.setText(p.desc);
