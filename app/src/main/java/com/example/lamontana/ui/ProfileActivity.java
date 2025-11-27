@@ -1,6 +1,5 @@
 package com.example.lamontana.ui;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -11,9 +10,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.lamontana.R;
-import com.example.lamontana.data.user.UserRepository;
 import com.example.lamontana.data.user.UserStore;
 import com.example.lamontana.ui.navbar.MenuDesplegableHelper;
+import com.example.lamontana.ui.profile.ModificarContrasenaHelper;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 /*
  * ============================================================
@@ -24,13 +25,15 @@ import com.example.lamontana.ui.navbar.MenuDesplegableHelper;
  *   - Muestra y permite editar los datos básicos del usuario:
  *       · nombre
  *       · apellido
- *       · email (normalmente solo lectura)
+ *       · email
  *       · teléfono
  *       · dirección
  *   - Carga y guarda esos datos en UserStore (estado en memoria).
  *   - Sincroniza los cambios con Firestore en la colección
- *     "usuarios", actualizando el documento del usuario actual
- *     a través de UserRepository.updateUserProfile(...).
+ *     "usuarios" (documento usuarios/{uid}).
+ *   - Ofrece la acción "Cambiar contraseña", delegando toda la
+ *     lógica de Auth + Firestore en el helper:
+ *       · ModificarContrasenaHelper.mostrarDialogoCambioContrasena(...)
  *   - Muestra el navbar con menú desplegable (top sheet) para:
  *       · Ir al inicio (Catálogo)
  *       · Ir a Mis datos
@@ -41,14 +44,17 @@ import com.example.lamontana.ui.navbar.MenuDesplegableHelper;
  * Clases usadas:
  *   - UserStore:
  *       * Almacena datos básicos del usuario en memoria.
- *   - UserRepository:
- *       * Encapsula operaciones sobre la colección "usuarios"
- *         en Firestore (actualizar perfil).
+ *   - FirebaseFirestore:
+ *       * Actualiza los datos del usuario en la colección
+ *         "usuarios" (nombre, apellido, teléfono, dirección).
+ *   - FieldValue:
+ *       * Permite setear el campo "actualizadoEn" con
+ *         serverTimestamp().
  *   - MenuDesplegableHelper:
  *       * Maneja el menú top-sheet del navbar (animaciones y
  *         navegación).
- *   - AlertDialog:
- *       * Para el mensaje de "Cambiar contraseña" (placeholder).
+ *   - ModificarContrasenaHelper:
+ *       * Encapsula el flujo de "Cambiar contraseña".
  *
  * Métodos presentes:
  *   - onCreate(Bundle):
@@ -61,13 +67,9 @@ import com.example.lamontana.ui.navbar.MenuDesplegableHelper;
  *   - saveProfile():
  *       * Lee campos del formulario.
  *       * Actualiza UserStore en memoria.
- *       * Intenta sincronizar con Firestore usando UserRepository.
- *   - changePasswordDialog():
- *       * Muestra un diálogo informativo (sin lógica real aún).
- *   - loadUserData():
+ *       * Sincroniza Firestore (perfil).
+ *   - loadUserData() / bindUserData():
  *       * Carga los datos desde UserStore en los EditText.
- *   - bindUserData():
- *       * Versión interna para vincular datos a las vistas.
  * ============================================================
  */
 
@@ -111,6 +113,9 @@ public class ProfileActivity extends AppCompatActivity {
         loadUserData();
     }
 
+    /**
+     * Enlaza las vistas de la pantalla con las variables de la Activity.
+     */
     private void initViews() {
         etNombre = findViewById(R.id.etNombre);
         etApellido = findViewById(R.id.etApellido);
@@ -119,6 +124,9 @@ public class ProfileActivity extends AppCompatActivity {
         etDireccion = findViewById(R.id.etDireccion);
     }
 
+    /**
+     * Carga los datos desde UserStore y los muestra en los EditText.
+     */
     private void bindUserData() {
         UserStore u = UserStore.get();
 
@@ -129,6 +137,9 @@ public class ProfileActivity extends AppCompatActivity {
         if (etDireccion != null)etDireccion.setText(u.direccion);
     }
 
+    /**
+     * Configura listeners para los botones de "Guardar" y "Cambiar contraseña".
+     */
     private void setupListeners() {
         View btnSave = findViewById(R.id.btnSave);
         if (btnSave != null) {
@@ -137,7 +148,9 @@ public class ProfileActivity extends AppCompatActivity {
 
         View btnChangePassword = findViewById(R.id.btnChangePassword);
         if (btnChangePassword != null) {
-            btnChangePassword.setOnClickListener(v -> changePasswordDialog());
+            btnChangePassword.setOnClickListener(
+                    v -> ModificarContrasenaHelper.mostrarDialogoCambioContrasena(ProfileActivity.this)
+            );
         }
     }
 
@@ -157,7 +170,8 @@ public class ProfileActivity extends AppCompatActivity {
         // 2) Actualizar UserStore en memoria
         UserStore store = UserStore.get();
         // nombre forma parte de los datos "básicos"
-        store.setBasicData(store.uid, nombre.isEmpty() ? store.nombre : nombre, store.email);
+        String nombreFinal = nombre.isEmpty() ? store.nombre : nombre;
+        store.setBasicData(store.uid, nombreFinal, store.email);
         // los opcionales se actualizan siempre
         store.setOptionalData(apellido, telefono, direccion);
 
@@ -174,14 +188,16 @@ public class ProfileActivity extends AppCompatActivity {
             return;
         }
 
-        // 4) Actualizar Firestore a través del repositorio
-        UserRepository.getInstance()
-                .updateUserProfile(
-                        uid,
-                        nombre.isEmpty() ? null : nombre,
-                        apellido.isEmpty() ? null : apellido,
-                        telefono.isEmpty() ? null : telefono,
-                        direccion.isEmpty() ? null : direccion
+        // 4) Actualizar Firestore a través de la colección "usuarios"
+        FirebaseFirestore.getInstance()
+                .collection("usuarios")
+                .document(uid)
+                .update(
+                        "nombre", nombreFinal,
+                        "apellido", apellido,
+                        "telefono", telefono,
+                        "direccion", direccion,
+                        "actualizadoEn", FieldValue.serverTimestamp()
                 )
                 .addOnSuccessListener(unused -> Toast.makeText(
                         ProfileActivity.this,
@@ -195,14 +211,9 @@ public class ProfileActivity extends AppCompatActivity {
                 ).show());
     }
 
-    private void changePasswordDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("Cambiar contraseña")
-                .setMessage("Funcionalidad disponible cuando la app esté conectada a Firebase Auth.")
-                .setPositiveButton("OK", null)
-                .show();
-    }
-
+    /**
+     * Carga los datos del usuario desde UserStore a la UI.
+     */
     private void loadUserData() {
         bindUserData();
     }
