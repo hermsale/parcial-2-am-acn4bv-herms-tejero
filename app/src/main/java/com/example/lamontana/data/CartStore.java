@@ -116,18 +116,22 @@ public class CartStore {
         items.clear();
     }
 
-//    elimina 1 item del carrito
-    public void remove(Product p) {
-        if (p == null) return;
+    //    elimina 1 item del carrito
+    public synchronized void remove(Product p) {
+        if (p == null || p.name == null) return;
+
         Iterator<CartItem> iterator = items.iterator();
         while (iterator.hasNext()) {
             CartItem item = iterator.next();
-            if (item.product != null && item.product.equals(p)) {
+            if (item.product != null
+                    && item.product.name != null
+                    && item.product.name.equals(p.name)) {
                 iterator.remove();
                 break;
             }
         }
     }
+
 
     /**
      * Agrega el producto p al carrito.

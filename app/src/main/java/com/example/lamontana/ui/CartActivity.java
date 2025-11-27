@@ -48,7 +48,7 @@ import java.util.Locale;
  *   - Carga las imágenes de los productos desde la URL remota
  *     (Product.imageUrl, proveniente de Firestore/Storage) usando Glide,
  *     con fallback al recurso drawable local (imageRes).
- *   - Delegar la lógica de estado del carrito en CartViewModel, que
+ *   - Delega la lógica de estado del carrito en CartViewModel, que
  *     a su vez envuelve CartStore y expone LiveData:
  *       · Lista de CartItem
  *       · Total en pesos
@@ -136,25 +136,19 @@ public class CartActivity extends AppCompatActivity {
         // ---------- Inicializar ViewModel y observar LiveData ----------
         cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
 
-        // Lista de ítems: cada cambio re-renderiza el carrito completo
+        // Observamos SOLO la lista de ítems.
+        // Cuando cambie:
+        //   1) Re-renderizamos el carrito completo.
+        //   2) Actualizamos el total y el estado del botón usando los totales del ViewModel.
         cartViewModel.getItems().observe(this, this::renderCart);
+    }
 
-        // Totales: cada cambio actualiza el total y el estado del botón
-        cartViewModel.getTotalAmount().observe(this, totalAmount -> {
-            Integer qty = cartViewModel.getTotalQty().getValue();
-            updateGrandTotal(
-                    totalAmount != null ? totalAmount : 0,
-                    qty != null ? qty : 0
-            );
-        });
-
-        cartViewModel.getTotalQty().observe(this, qty -> {
-            Integer totalAmount = cartViewModel.getTotalAmount().getValue();
-            updateGrandTotal(
-                    totalAmount != null ? totalAmount : 0,
-                    qty != null ? qty : 0
-            );
-        });
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (cartViewModel != null) {
+            cartViewModel.refresh();
+        }
     }
 
     /**
@@ -175,96 +169,114 @@ public class CartActivity extends AppCompatActivity {
     /**
      * Dibuja toda la lista del carrito a partir de la lista observada.
      * Carga las imágenes desde URL usando Glide.
+     * Además, actualiza el total global usando los valores del ViewModel.
      */
     private void renderCart(List<CartItem> items) {
         if (llCartListContainer == null) return;
 
         llCartListContainer.removeAllViews();
-        if (items == null || items.isEmpty()) {
-            // Podrías opcionalmente mostrar un mensaje de "Carrito vacío" aquí.
-            return;
-        }
 
-        LayoutInflater inflater = LayoutInflater.from(this);
-
-        for (CartItem ci : items) {
-            View row = inflater.inflate(R.layout.item_cart_detail, llCartListContainer, false);
-
-            ImageView iv = row.findViewById(R.id.ivThumb);
-            TextView tvName = row.findViewById(R.id.tvName);
-            TextView tvDesc = row.findViewById(R.id.tvDesc);
-            TextView tvUnitPrice = row.findViewById(R.id.tvUnitPrice);
-            TextView tvItemTotal = row.findViewById(R.id.tvItemTotal);
-            TextView tvQty = row.findViewById(R.id.tvQty);
-            MaterialButton btnMinus = row.findViewById(R.id.btnMinus);
-            MaterialButton btnPlus = row.findViewById(R.id.btnPlus);
-            MaterialButton btnRemoveItem = row.findViewById(R.id.btnRemoveItem);
-
-            Product p = ci.product;
-            if (p == null) continue;
-
-            // ==== BLOQUE Glide: Carga de imagen desde imageUrl con fallback a imageRes ====
-            if (iv != null) {
-                int fallbackRes = (p.imageRes != 0)
-                        ? p.imageRes
-                        : R.drawable.sample_print_bw;
-
-                if (!TextUtils.isEmpty(p.imageUrl)) {
-                    // Imagen remota desde Firebase Storage
-                    Glide.with(iv.getContext())
-                            .load(p.imageUrl)
-                            .placeholder(fallbackRes)
-                            .error(fallbackRes)
-                            .into(iv);
-                } else if (p.imageRes != 0) {
-                    // Fallback: drawable local ya definido en el Product
-                    iv.setImageResource(p.imageRes);
-                } else {
-                    // Último recurso: icono genérico
-                    iv.setImageResource(R.drawable.ic_launcher_foreground);
+        if (items != null && !items.isEmpty()) {
+            LayoutInflater inflater = LayoutInflater.from(this);
+            for (CartItem ci : items) {
+                View row = createCartRow(inflater, ci);
+                if (row != null) {
+                    llCartListContainer.addView(row);
                 }
             }
-            // ============================================================================
-
-            if (tvName != null) tvName.setText(p.name);
-            if (tvDesc != null) tvDesc.setText(p.desc);
-            if (tvUnitPrice != null) {
-                tvUnitPrice.setText(
-                        getString(R.string.unit_price_format, ars.format(p.price))
-                );
-            }
-            if (tvQty != null) tvQty.setText(String.valueOf(ci.qty));
-            if (tvItemTotal != null) {
-                tvItemTotal.setText(
-                        getString(R.string.item_total_format, ars.format(ci.qty * p.price))
-                );
-            }
-
-            // ----- Listeners para +, -, eliminar delegando en el ViewModel -----
-
-            if (btnMinus != null) {
-                btnMinus.setOnClickListener(v -> cartViewModel.dec(p));
-            }
-
-            if (btnPlus != null) {
-                btnPlus.setOnClickListener(v -> cartViewModel.inc(p));
-            }
-
-            if (btnRemoveItem != null) {
-                btnRemoveItem.setOnClickListener(v -> {
-                    new AlertDialog.Builder(this)
-                            .setTitle("Eliminar producto")
-                            .setMessage("¿Deseás quitar \"" + p.name + "\" del carrito?")
-                            .setPositiveButton("Eliminar", (dialog, which) -> {
-                                cartViewModel.remove(p);
-                            })
-                            .setNegativeButton("Cancelar", null)
-                            .show();
-                });
-            }
-
-            llCartListContainer.addView(row);
         }
+
+        // Leer totales actuales desde el ViewModel y actualizar la UI
+        Integer totalAmount = cartViewModel.getTotalAmount().getValue();
+        Integer totalQty = cartViewModel.getTotalQty().getValue();
+
+        updateGrandTotal(
+                totalAmount != null ? totalAmount : 0,
+                totalQty != null ? totalQty : 0
+        );
+    }
+
+    /**
+     * Crea y configura una fila visual del carrito para un CartItem dado.
+     */
+    private View createCartRow(LayoutInflater inflater, CartItem ci) {
+        if (ci == null || ci.product == null) return null;
+
+        View row = inflater.inflate(R.layout.item_cart_detail, llCartListContainer, false);
+
+        ImageView iv = row.findViewById(R.id.ivThumb);
+        TextView tvName = row.findViewById(R.id.tvName);
+        TextView tvDesc = row.findViewById(R.id.tvDesc);
+        TextView tvUnitPrice = row.findViewById(R.id.tvUnitPrice);
+        TextView tvItemTotal = row.findViewById(R.id.tvItemTotal);
+        TextView tvQty = row.findViewById(R.id.tvQty);
+        MaterialButton btnMinus = row.findViewById(R.id.btnMinus);
+        MaterialButton btnPlus = row.findViewById(R.id.btnPlus);
+        MaterialButton btnRemoveItem = row.findViewById(R.id.btnRemoveItem);
+
+        Product p = ci.product;
+
+        // ==== BLOQUE Glide: Carga de imagen desde imageUrl con fallback a imageRes ====
+        if (iv != null) {
+            int fallbackRes = (p.imageRes != 0)
+                    ? p.imageRes
+                    : R.drawable.sample_print_bw;
+
+            if (!TextUtils.isEmpty(p.imageUrl)) {
+                // Imagen remota desde Firebase Storage
+                Glide.with(iv.getContext())
+                        .load(p.imageUrl)
+                        .placeholder(fallbackRes)
+                        .error(fallbackRes)
+                        .into(iv);
+            } else if (p.imageRes != 0) {
+                // Fallback: drawable local ya definido en el Product
+                iv.setImageResource(p.imageRes);
+            } else {
+                // Último recurso: icono genérico
+                iv.setImageResource(R.drawable.ic_launcher_foreground);
+            }
+        }
+        // ============================================================================
+
+        if (tvName != null) tvName.setText(p.name);
+        if (tvDesc != null) tvDesc.setText(p.desc);
+        if (tvUnitPrice != null) {
+            tvUnitPrice.setText(
+                    getString(R.string.unit_price_format, ars.format(p.price))
+            );
+        }
+        if (tvQty != null) tvQty.setText(String.valueOf(ci.qty));
+        if (tvItemTotal != null) {
+            tvItemTotal.setText(
+                    getString(R.string.item_total_format, ars.format(ci.qty * p.price))
+            );
+        }
+
+        // ----- Listeners para +, -, eliminar delegando en el ViewModel -----
+
+        if (btnMinus != null) {
+            btnMinus.setOnClickListener(v -> cartViewModel.dec(p));
+        }
+
+        if (btnPlus != null) {
+            btnPlus.setOnClickListener(v -> cartViewModel.inc(p));
+        }
+
+        if (btnRemoveItem != null) {
+            btnRemoveItem.setOnClickListener(v -> {
+                new AlertDialog.Builder(CartActivity.this)
+                        .setTitle("Eliminar producto")
+                        .setMessage("¿Deseás quitar \"" + p.name + "\" del carrito?")
+                        .setPositiveButton("Eliminar", (dialog, which) -> {
+                            cartViewModel.remove(p);
+                        })
+                        .setNegativeButton("Cancelar", null)
+                        .show();
+            });
+        }
+
+        return row;
     }
 
     /**
