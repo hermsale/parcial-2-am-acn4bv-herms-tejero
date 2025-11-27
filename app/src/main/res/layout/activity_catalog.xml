@@ -42,17 +42,6 @@
     android:padding="@dimen/spacing_md"
     android:background="@color/brand_background">
 
-    <!--
-        Barra superior reutilizable con logo y título.
-        Incluye posibles iconos de menú o navegación.
-    -->
-<!--    <include-->
-<!--        android:id="@+id/includeToolbar"-->
-<!--        layout="@layout/include_app_bar"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent" />-->
-
     <include
         android:id="@+id/navbar"
         layout="@layout/include_navbar"
