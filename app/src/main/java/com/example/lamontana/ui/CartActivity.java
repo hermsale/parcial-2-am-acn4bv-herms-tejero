@@ -104,19 +104,9 @@ public class CartActivity extends AppCompatActivity {
         }
 
         // Botones dentro del top sheet
-        View btnInicio = findViewById(R.id.btnInicio);
-
         View btnMisDatos = findViewById(R.id.btnMisDatos);
         View btnMiCarrito = findViewById(R.id.btnMiCarrito);
         View btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
-
-//        boton que envia al inicio
-        if (btnInicio != null){
-            btnInicio.setOnClickListener(v -> {
-                closeMenu();
-                startActivity(new Intent(CartActivity.this, CatalogActivity.class));
-            });
-        }
 
         if (btnMisDatos != null) {
             btnMisDatos.setOnClickListener(v -> {

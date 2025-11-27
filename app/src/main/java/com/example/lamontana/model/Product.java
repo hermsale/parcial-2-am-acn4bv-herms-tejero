@@ -5,37 +5,9 @@ package com.example.lamontana.model;
  * Archivo: Product.java
  * Paquete: com.example.lamontana.model
  * ------------------------------------------------------------
- * ¿De qué se encarga?
- *   - Representa un producto o servicio disponible en el Catálogo.
- *     Cada instancia define la información visual y comercial de un ítem.
- *
- * ¿Qué clase contiene?
- *   - Product: clase de modelo inmutable (sus campos son finales).
- *
- * ¿Qué atributos tiene?
- *   - String name       → nombre del producto (ej.: "Impresión B/N").
- *   - String desc       → descripción corta (ej.: "Cara simple · A4").
- *   - int price         → precio unitario en ARS (entero para simplificar).
- *   - Category category → categoría asociada (PRINT o BINDING).
- *   - int imageRes      → recurso drawable usado como miniatura.
- *   - boolean copyBased → indica si el producto depende de un archivo PDF
- *                         para calcular la cantidad (por ejemplo, copias por página).
- *
- * ¿Qué métodos expone?
- *   - Constructor Product(...) con validaciones básicas.
- *   - toString(): representación legible del producto (útil en logs o depuración).
- *
- * ¿Qué función cumple en las vistas?
- *   - En la vista Catálogo (MainActivity):
- *       * Se crea en el método seedMockData() como parte de la lista allProducts.
- *       * Se renderiza dinámicamente dentro del layout item_catalog.xml.
- *       * El botón “Agregar” asocia el objeto Product al evento para pasarlo a CartStore.
- *   - En la vista Carrito (CartActivity):
- *       * Se accede a los campos (name, desc, price, imageRes) para mostrar la línea correspondiente.
- *
- * Notas:
- *   - La clase es inmutable para evitar modificaciones accidentales.
- *   - Los valores se validan en el constructor para evitar estados inconsistentes.
+ * Representa un producto disponible en el Catálogo.
+ * Ahora incluye soporte para URL remota de imagen (imageUrl)
+ * proveniente de Firebase Storage.
  * ============================================================
  */
 
@@ -53,25 +25,27 @@ public class Product {
     /** Categoría del producto (PRINT o BINDING). */
     public final Category category;
 
-    /** ID de recurso drawable usado como miniatura. */
+    /** Recurso drawable local usado como fallback. */
     public final int imageRes;
 
-    /** true si el producto puede calcular cantidad a partir de un PDF (ej. copias). */
+    /** true si el producto se calcula por copia/archivo PDF. */
     public final boolean copyBased;
 
+    /** URL remota en Firebase Storage (puede ser null). */
+    public final String imageUrl;
+
     /**
-     * Constructor principal.
-     *
-     * @param name       nombre del producto (no puede ser null ni vacío)
-     * @param desc       descripción corta (no puede ser null)
-     * @param price      precio unitario en ARS (debe ser mayor o igual a 0)
-     * @param category   categoría asociada (no puede ser null)
-     * @param imageRes   recurso drawable asociado (debe ser un ID válido)
-     * @param copyBased  indica si el producto depende de archivos PDF
-     * @throws IllegalArgumentException si algún parámetro obligatorio es inválido
+     * Constructor completo (7 parámetros).
      */
-    public Product(String name, String desc, int price,
-                   Category category, int imageRes, boolean copyBased) {
+    public Product(
+            String name,
+            String desc,
+            int price,
+            Category category,
+            int imageRes,
+            boolean copyBased,
+            String imageUrl
+    ) {
 
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre del producto no puede ser nulo ni vacío");
@@ -92,13 +66,17 @@ public class Product {
         this.category = category;
         this.imageRes = imageRes;
         this.copyBased = copyBased;
+
+        // Nuevo campo
+        this.imageUrl = imageUrl;  // puede ser null o una URL completa de Firebase Storage
     }
 
-    /**
-     * Devuelve una descripción legible del producto, útil para depuración.
-     */
     @Override
     public String toString() {
-        return "Product{name='" + name + "', precio=" + price + " ARS, categoría=" + category + "}";
+        return "Product{name='" + name +
+                "', precio=" + price +
+                ", categoría=" + category +
+                ", imageUrl=" + imageUrl +
+                "}";
     }
 }

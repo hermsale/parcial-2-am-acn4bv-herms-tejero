@@ -1,4 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+ =============================================================
+ Archivo: activity_profile.xml
+ Ubicación: app/src/main/res/layout/
+
+ ¿De qué se encarga este archivo?
+   - Define la interfaz de la pantalla "Mis datos" de la app
+     “La Montaña”.
+   - Permite al usuario ver y editar sus datos personales:
+     nombre, apellido, teléfono y dirección.
+   - Muestra el email como campo no editable, ya que es el
+     identificador principal en Firebase Auth.
+   - Incluye un botón para iniciar el flujo de cambio de
+     contraseña y otro para guardar los cambios del perfil.
+   - Reutiliza:
+       • include_navbar.xml como barra superior.
+       • include_footer.xml como pie de página institucional.
+       • layout_top_sheet_menu.xml como menú desplegable (top sheet).
+
+ Relación con las clases:
+   - Controlado por ProfileActivity.java, que:
+       ▪ Carga y guarda los datos del usuario usando UserStore
+         y UserRepository (Firestore).
+       ▪ Llama a ModificarContrasenaHelper para cambiar la
+         contraseña.
+       ▪ Usa MenuDesplegableHelper para el navbar.
+
+ Estructura general:
+   1. Navbar fijo en la parte superior.
+   2. Contenido scrolleable con el formulario de perfil.
+   3. Footer reutilizable al fondo de la pantalla.
+   4. Overlay + top sheet para el menú desplegable.
+
+ =============================================================
+-->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -14,7 +49,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- CONTENIDO SCROLLEABLE DEBAJO DEL NAVBAR -->
+    <!-- CONTENIDO SCROLLEABLE DEBAJO DEL NAVBAR Y POR ENCIMA DEL FOOTER -->
     <ScrollView
         android:id="@+id/profileScroll"
         android:layout_width="0dp"
@@ -22,7 +57,7 @@
         android:fillViewport="true"
         android:padding="16dp"
         app:layout_constraintTop_toBottomOf="@id/includeNavbar"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/includeFooter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -89,14 +124,21 @@
                 android:padding="12dp"
                 android:layout_marginTop="10dp"/>
 
+            <!--
+                Botón de acción para iniciar el flujo de cambio de contraseña.
+                - Visual: usa el naranja de marca (brand_orange), igual que botones
+                  de acción como "Agregar" en el catálogo.
+                - Lógica: al hacer click, ProfileActivity delega en
+                  ModificarContrasenaHelper.mostrarDialogoCambioContrasena(...).
+            -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnChangePassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Cambiar contraseña"
                 android:layout_marginTop="24dp"
-                android:backgroundTint="@color/brand_brown"
-                android:textColor="@android:color/white"/>
+                android:backgroundTint="@color/brand_orange"
+                android:textColor="@color/brand_text_on_primary"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSave"
@@ -109,6 +151,16 @@
 
         </LinearLayout>
     </ScrollView>
+
+    <!-- FOOTER REUTILIZABLE (MISMO QUE EN CATÁLOGO Y CARRITO) -->
+    <include
+        android:id="@+id/includeFooter"
+        layout="@layout/include_footer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <!-- OVERLAY (siempre sobre todo) -->
     <View
