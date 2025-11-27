@@ -65,46 +65,6 @@
         app:layout_constraintTop_toBottomOf="@id/navbar"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!--
-        Muestra el total acumulado del carrito.
-        Se actualiza dinámicamente desde CartActivity.updateTotal().
-    -->
-<!--    <TextView-->
-<!--        android:id="@+id/tvCartGrandTotal"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Total: $ 0"-->
-<!--        android:textStyle="bold"-->
-<!--        android:textColor="@color/brand_text_primary"-->
-<!--        android:layout_marginTop="@dimen/spacing_sm"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/navbar"-->
-<!--        app:layout_constraintEnd_toEndOf="parent" />-->
-
-    <!--
-        Crea una barrera virtual para alinear el contenido inferior del encabezado,
-        de modo que los botones y textos queden correctamente espaciados.
-    -->
-<!--    <androidx.constraintlayout.widget.Barrier-->
-<!--        android:id="@+id/barrierHeader"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:barrierDirection="bottom"-->
-<!--        app:constraint_referenced_ids="btnBackToCatalog,btnPlaceAllOrders" />-->
-
-    <!--
-        Botón que permite realizar todos los pedidos del carrito.
-        En esta versión de prueba, solo simula la acción.
-    -->
-<!--    <com.google.android.material.button.MaterialButton-->
-<!--        android:id="@+id/btnPlaceAllOrders"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="@string/place_all_orders"-->
-<!--        android:backgroundTint="@color/brand_green"-->
-<!--        android:layout_marginTop="@dimen/spacing_xs"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/tvCartGrandTotal"-->
-<!--        app:layout_constraintEnd_toEndOf="parent" />-->
-
     <!-- NUEVA BARRA DE ACCIONES FIJA ABAJO -->
     <LinearLayout
         android:id="@+id/bottomActionBar"
