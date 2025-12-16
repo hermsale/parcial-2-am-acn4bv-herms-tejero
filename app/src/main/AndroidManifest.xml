@@ -58,6 +58,11 @@
             android:name=".ui.SignupActivity"
             android:exported="false" />
 
+        <!--    Servicios -     -->
+        <activity
+            android:name=".ui.ServiciosActivity"
+            android:exported="false" />
+
         <!-- ========================================================= -->
         <!-- Pantalla principal de uso: Catálogo                      -->
         <!-- (se abre tras el login correcto)                         -->
@@ -72,6 +77,8 @@
         <activity
             android:name=".ui.CartActivity"
             android:exported="false" />
+
+
 
         <!-- ========================================================= -->
         <!-- Perfil / Mis datos del usuario                           -->

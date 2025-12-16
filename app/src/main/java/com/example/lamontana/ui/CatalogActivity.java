@@ -159,7 +159,9 @@ public class CatalogActivity extends AppCompatActivity {
 
         btnAll = findViewById(R.id.btnFilterAll);
         btnPrint = findViewById(R.id.btnFilterPrint);
+//        boton de servicios
         btnBinding = findViewById(R.id.btnFilterBinding);
+
         btnClearCart = findViewById(R.id.btnClearCart);
         btnViewCart = findViewById(R.id.btnViewCart);
 
@@ -193,8 +195,12 @@ public class CatalogActivity extends AppCompatActivity {
         if (btnPrint != null) {
             btnPrint.setOnClickListener(v -> filterAndRender(Category.PRINT));
         }
+
+//        boton ir a servicios
         if (btnBinding != null) {
-            btnBinding.setOnClickListener(v -> filterAndRender(Category.BINDING));
+            btnBinding.setOnClickListener(v ->
+                startActivity(new Intent(CatalogActivity.this, ServiciosActivity.class))
+            );
         }
 
         if (btnClearCart != null) {
@@ -204,6 +210,8 @@ public class CatalogActivity extends AppCompatActivity {
             });
         }
 
+
+//       boton ir al carrito
         if (btnViewCart != null) {
             btnViewCart.setOnClickListener(v ->
                     startActivity(new Intent(CatalogActivity.this, CartActivity.class))

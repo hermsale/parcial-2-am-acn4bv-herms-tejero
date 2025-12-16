@@ -175,6 +175,7 @@
             android:text="@string/filter_print"
             android:layout_marginEnd="@dimen/spacing_xs" />
 
+<!--        boton de servicios -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnFilterBinding"
             android:layout_width="wrap_content"

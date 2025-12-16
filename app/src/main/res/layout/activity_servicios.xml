@@ -1,0 +1,130 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+
+        <include
+            android:id="@+id/navbar"
+            layout="@layout/include_navbar" />
+
+
+        <TextView
+            android:text="Configura tu pedido"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <!-- Archivo -->
+        <Button
+            android:id="@+id/btnArchivo"
+            android:text="Seleccionar archivo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/txtArchivo"
+            android:text="Ningún archivo seleccionado"
+            android:layout_marginBottom="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <!-- Carillas -->
+        <TextView
+            android:text="Carillas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:id="@+id/edtCarillas"
+            android:inputType="number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- Tamaño de hoja -->
+        <TextView
+            android:text="Tamaño de hoja"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Spinner
+            android:id="@+id/spPaperSize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- Modo -->
+        <TextView
+            android:text="Modo de impresión"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <RadioGroup
+            android:id="@+id/rgModo"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/rbBN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Blanco y negro"/>
+
+            <RadioButton
+                android:id="@+id/rbColor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Color"/>
+        </RadioGroup>
+
+        <!-- Opciones -->
+        <CheckBox
+            android:id="@+id/chkDobleFaz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Doble faz"/>
+
+        <CheckBox
+            android:id="@+id/chkEncuadernado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Encuadernado"/>
+
+        <CheckBox
+            android:id="@+id/chkAnillado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Anillado"/>
+
+        <!-- Método de pago -->
+        <TextView
+            android:text="Método de pago"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Spinner
+            android:id="@+id/spMetodoPago"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- Notas -->
+        <EditText
+            android:id="@+id/edtNotas"
+            android:hint="Indicaciones adicionales"
+            android:minLines="3"
+            android:gravity="top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+</ScrollView>
