@@ -283,7 +283,7 @@ public class CheckoutActivity extends AppCompatActivity {
     // ----------------------------------------------------------
     // Actualiza el label de total general del checkout
     // ----------------------------------------------------------
-    private void updateTotalLabel() {
+    private int updateTotalLabel() {
         int total = CartStore.get().getTotalAmount();
 
         total_servicio = getIntent().getIntExtra("SERVICIO_TOTAL", 0);
@@ -292,20 +292,23 @@ public class CheckoutActivity extends AppCompatActivity {
         if (tvFinalTotal != null) {
             tvFinalTotal.setText("Total: " + ars.format(total));
         }
+
+        return total;
     }
 
     // ----------------------------------------------------------
     // Acción “Realizar todos los pedidos”
     // ----------------------------------------------------------
     private void onPlaceAllOrders() {
-        int items = CartStore.get().getTotalQty();
-        int total = CartStore.get().getTotalAmount();
-        if (items <= 0) return;
+//        actualizo el total
+        int realizarPagoTotal = updateTotalLabel();
+//        int items = CartStore.get().getTotalQty();
+//        int total = CartStore.get().getTotalAmount();
+        if (realizarPagoTotal <= 0) return;
 
         new AlertDialog.Builder(this)
                 .setTitle("Confirmar compra")
-                .setMessage("Vas a realizar " + items +
-                        " pedidos por un total de " + ars.format(total))
+                .setMessage("Vas a realizar un pedidos por un total de " + ars.format(realizarPagoTotal))
                 .setPositiveButton("Confirmar", (dialog, which) -> {
                     CartStore.get().clear();
                     Intent i = new Intent(CheckoutActivity.this, SuccessActivity.class);
