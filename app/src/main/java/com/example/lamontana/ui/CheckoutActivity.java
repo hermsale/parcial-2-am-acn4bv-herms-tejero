@@ -134,12 +134,15 @@ public class CheckoutActivity extends AppCompatActivity {
         View btnMiCarrito = findViewById(R.id.btnMiCarrito);
         View btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
 
+        View btnImpresionesCopias = findViewById(R.id.btnImpresionesCopias);
+
         menuHelper = new MenuDesplegableHelper(
                 this,
                 btnMenu,
                 overlay,
                 topSheet,
                 btnInicio,
+                btnImpresionesCopias,
                 btnMisDatos,
                 btnMiCarrito,
                 btnCerrarSesion

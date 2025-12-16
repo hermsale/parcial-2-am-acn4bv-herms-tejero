@@ -135,6 +135,7 @@ public class ProfileActivity extends AppCompatActivity {
         View btnMisDatos = findViewById(R.id.btnMisDatos);
         View btnMiCarrito = findViewById(R.id.btnMiCarrito);
         View btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
+        View btnImpresionesCopias = findViewById(R.id.btnImpresionesCopias);
 
         menuHelper = new MenuDesplegableHelper(
                 this,
@@ -142,6 +143,7 @@ public class ProfileActivity extends AppCompatActivity {
                 overlay,
                 topSheet,
                 btnInicio,
+                btnImpresionesCopias,
                 btnMisDatos,
                 btnMiCarrito,
                 btnCerrarSesion

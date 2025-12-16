@@ -3,17 +3,22 @@ package com.example.lamontana.ui;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.*;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.lamontana.R;
+import com.example.lamontana.ui.navbar.MenuDesplegableHelper;
 
 import java.util.Arrays;
 public class ServiciosActivity extends AppCompatActivity {
 
+    // Helper para el menú desplegable del navbar
+    private MenuDesplegableHelper menuHelper;
     Button btnArchivo;
+
     TextView txtArchivo;
     EditText edtCarillas, edtNotas;
     Spinner spPaperSize, spMetodoPago;
@@ -21,6 +26,7 @@ public class ServiciosActivity extends AppCompatActivity {
     CheckBox chkDobleFaz, chkEncuadernado, chkAnillado;
 
     ActivityResultLauncher<String> seleccionarArchivo;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +44,31 @@ public class ServiciosActivity extends AppCompatActivity {
         chkDobleFaz = findViewById(R.id.chkDobleFaz);
         chkEncuadernado = findViewById(R.id.chkEncuadernado);
         chkAnillado = findViewById(R.id.chkAnillado);
+
+        // ---------- Navbar / Menú deslizante con helper ----------
+        ImageView btnMenu = findViewById(R.id.btnMenu);
+        View overlay = findViewById(R.id.overlay);
+        View topSheet = findViewById(R.id.topSheet);
+
+        View btnMisDatos = findViewById(R.id.btnMisDatos);
+        View btnMiCarrito = findViewById(R.id.btnMiCarrito);
+        View btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
+        View btnInicio = findViewById(R.id.btnInicio);
+        View btnImpresionesCopias = findViewById(R.id.btnImpresionesCopias);
+
+
+        menuHelper = new MenuDesplegableHelper(
+                this,
+                btnMenu,
+                overlay,
+                topSheet,
+                btnInicio,
+                btnMisDatos,
+                btnImpresionesCopias,
+                btnMiCarrito,
+                btnCerrarSesion
+        );
+        menuHelper.initMenu();
 
         // Selector de archivo
         seleccionarArchivo = registerForActivityResult(

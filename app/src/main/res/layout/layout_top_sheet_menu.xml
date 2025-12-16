@@ -60,7 +60,7 @@
         android:id="@+id/btnImpresionesCopias"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Impresiones y copias"
+        android:text="Servicios"
         android:textSize="18sp"
         android:padding="12dp" />
 

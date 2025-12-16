@@ -13,6 +13,7 @@ import com.example.lamontana.ui.CartActivity;
 import com.example.lamontana.ui.CatalogActivity;
 import com.example.lamontana.ui.LoginActivity;
 import com.example.lamontana.ui.ProfileActivity;
+import com.example.lamontana.ui.ServiciosActivity;
 
 /*
  * ============================================================
@@ -68,6 +69,8 @@ public class MenuDesplegableHelper {
     private final View btnInicio;
     private final View btnMisDatos;
     private final View btnMiCarrito;
+
+    private final View btnImpresionesCopias;
     private final View btnCerrarSesion;
 
     private boolean isMenuOpen = false;
@@ -79,6 +82,7 @@ public class MenuDesplegableHelper {
             View topSheet,
             View btnInicio,
             View btnMisDatos,
+            View btnImpresionesCopias,
             View btnMiCarrito,
             View btnCerrarSesion
     ) {
@@ -89,6 +93,7 @@ public class MenuDesplegableHelper {
         this.btnInicio = btnInicio;
         this.btnMisDatos = btnMisDatos;
         this.btnMiCarrito = btnMiCarrito;
+        this.btnImpresionesCopias = btnImpresionesCopias;
         this.btnCerrarSesion = btnCerrarSesion;
     }
 
@@ -137,6 +142,14 @@ public class MenuDesplegableHelper {
                 closeMenu();
                 Intent i = new Intent(activity, CartActivity.class);
                 activity.startActivity(i);
+            });
+        }
+
+        if (btnImpresionesCopias != null) {
+            btnImpresionesCopias.setOnClickListener(v -> {
+                        closeMenu();
+                        Intent i = new Intent(activity, ServiciosActivity.class);
+                        activity.startActivity(i);
             });
         }
 

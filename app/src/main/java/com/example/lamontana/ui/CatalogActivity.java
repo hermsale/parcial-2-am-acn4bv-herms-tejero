@@ -135,6 +135,8 @@ public class CatalogActivity extends AppCompatActivity {
         View btnMisDatos = findViewById(R.id.btnMisDatos);
         View btnMiCarrito = findViewById(R.id.btnMiCarrito);
         View btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
+        View btnImpresionesCopias = findViewById(R.id.btnImpresionesCopias);
+
 
         // En catálogo NO hay botón "Inicio" porque ya es la pantalla principal → pasamos null
         View btnInicio = null;
@@ -146,6 +148,7 @@ public class CatalogActivity extends AppCompatActivity {
                 topSheet,
                 btnInicio,
                 btnMisDatos,
+                btnImpresionesCopias,
                 btnMiCarrito,
                 btnCerrarSesion
         );

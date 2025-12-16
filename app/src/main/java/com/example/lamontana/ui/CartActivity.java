@@ -94,6 +94,8 @@ public class CartActivity extends AppCompatActivity {
         View btnMiCarrito = findViewById(R.id.btnMiCarrito);
         View btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
 
+        View btnImpresionesCopias = findViewById(R.id.btnImpresionesCopias);
+
         menuHelper = new MenuDesplegableHelper(
                 this,
                 btnMenu,
@@ -101,6 +103,7 @@ public class CartActivity extends AppCompatActivity {
                 topSheet,
                 btnInicio,
                 btnMisDatos,
+                btnImpresionesCopias,
                 btnMiCarrito,
                 btnCerrarSesion
         );
