@@ -1,8 +1,10 @@
 package com.example.lamontana.ui;
 
 
+import android.graphics.pdf.PdfRenderer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.view.View;
 import android.widget.*;
 import androidx.activity.result.ActivityResultLauncher;
@@ -24,6 +26,30 @@ public class ServiciosActivity extends AppCompatActivity {
     Spinner spPaperSize, spMetodoPago;
     RadioGroup rgModo;
     CheckBox chkDobleFaz, chkEncuadernado, chkAnillado;
+
+    private Uri archivoSeleccionadoUri;
+
+    //        metodo para contar carillas
+    private int obtenerCarillasDesdePdf(Uri uri) {
+        try {
+            ParcelFileDescriptor pfd =
+                    getContentResolver().openFileDescriptor(uri, "r");
+
+            if (pfd == null) return 0;
+
+            PdfRenderer renderer = new PdfRenderer(pfd);
+            int paginas = renderer.getPageCount();
+
+            renderer.close();
+            pfd.close();
+
+            return paginas;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
 
     ActivityResultLauncher<String> seleccionarArchivo;
 
@@ -70,19 +96,40 @@ public class ServiciosActivity extends AppCompatActivity {
         );
         menuHelper.initMenu();
 
+
+
         // Selector de archivo
         seleccionarArchivo = registerForActivityResult(
                 new ActivityResultContracts.GetContent(),
                 uri -> {
                     if (uri != null) {
+
+                        archivoSeleccionadoUri = uri;
+
                         txtArchivo.setText(uri.getLastPathSegment());
+
+                        // Utilizo el metodo para detectar carillas automáticamente
+                        int carillas = obtenerCarillasDesdePdf(uri);
+
+                        if (carillas > 0) {
+                            edtCarillas.setText(String.valueOf(carillas));
+                        } else {
+                            edtCarillas.setText("0");
+                        }
                     }
                 }
         );
 
         btnArchivo.setOnClickListener(v ->
+                seleccionarArchivo.launch("application/pdf")
+        );
+
+        btnArchivo.setOnClickListener(v ->
                 seleccionarArchivo.launch("*/*")
         );
+
+
+
 
         // Spinner tamaño hoja
         ArrayAdapter<String> paperAdapter = new ArrayAdapter<>(
@@ -99,5 +146,7 @@ public class ServiciosActivity extends AppCompatActivity {
                 Arrays.asList("Efectivo", "Transferencia")
         );
         spMetodoPago.setAdapter(pagoAdapter);
+
+
     }
 }
