@@ -144,9 +144,10 @@ public class CheckoutActivity extends AppCompatActivity {
         View btnInicio = findViewById(R.id.btnInicio);
         View btnMisDatos = findViewById(R.id.btnMisDatos);
         View btnMiCarrito = findViewById(R.id.btnMiCarrito);
+        View btnImpresionesCopias = findViewById(R.id.btnImpresionesCopias);
         View btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
 
-        View btnImpresionesCopias = findViewById(R.id.btnImpresionesCopias);
+
 
         menuHelper = new MenuDesplegableHelper(
                 this,
@@ -154,9 +155,9 @@ public class CheckoutActivity extends AppCompatActivity {
                 overlay,
                 topSheet,
                 btnInicio,
-                btnImpresionesCopias,
                 btnMisDatos,
                 btnMiCarrito,
+                btnImpresionesCopias,
                 btnCerrarSesion
         );
         menuHelper.initMenu();
@@ -308,7 +309,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
         new AlertDialog.Builder(this)
                 .setTitle("Confirmar compra")
-                .setMessage("Vas a realizar un pedidos por un total de " + ars.format(realizarPagoTotal))
+                .setMessage("Vas a realizar un pedido por un total de " + ars.format(realizarPagoTotal))
                 .setPositiveButton("Confirmar", (dialog, which) -> {
                     CartStore.get().clear();
                     Intent i = new Intent(CheckoutActivity.this, SuccessActivity.class);

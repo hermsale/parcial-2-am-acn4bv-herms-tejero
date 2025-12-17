@@ -183,7 +183,6 @@ public class ServiciosActivity extends AppCompatActivity {
 
 //        Btn para realizar el pago. redirigir a CheckoutActivity
         if (btnPagar != null){
-
             btnPagar.setOnClickListener(v -> {
                 Intent intent = new Intent(ServiciosActivity.this, CheckoutActivity.class);
                 intent.putExtra("SERVICIO_TOTAL", totalActual);
